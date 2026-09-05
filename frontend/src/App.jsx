@@ -19,12 +19,16 @@ import { LiveIndianSkyBackground } from './components/common/LiveIndianSkyBackgr
 
 function MainApp() {
   const { user } = useAuth();
-  const [currentPath, setCurrentPath] = useState(window.location.pathname || '/');
+  const getSubPath = () => {
+    const p = window.location.pathname || '/';
+    return p.replace(/^\/suraksha-drishti-ai/, '') || '/';
+  };
+  const [currentPath, setCurrentPath] = useState(getSubPath());
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     const handlePopState = () => {
-      setCurrentPath(window.location.pathname || '/');
+      setCurrentPath(getSubPath());
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -32,7 +36,8 @@ function MainApp() {
 
   const navigate = (path) => {
     setCurrentPath(path);
-    window.history.pushState({}, '', path);
+    const prefix = window.location.pathname.startsWith('/suraksha-drishti-ai') ? '/suraksha-drishti-ai' : '';
+    window.history.pushState({}, '', prefix + path);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
