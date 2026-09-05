@@ -1,0 +1,793 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-command-950 text-slate-100 font-sans antialiased;
+    background-color: #050b17;
+    background-image: 
+      radial-gradient(circle at 20% 15%, rgba(37, 99, 235, 0.12) 0%, transparent 45%),
+      radial-gradient(circle at 85% 20%, rgba(250, 204, 21, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 50% 85%, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, .font-heading {
+    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  }
+}
+
+/* Custom modern scrollbar styled with Yellow & Blue accents */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #070e1c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1c386e;
+  border-radius: 6px;
+  border: 1px solid rgba(250, 204, 21, 0.15);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
+  border-color: #fbbf24;
+}
+
+/* Glowing cyber accents for Yellow, White & Blue */
+.glow-yellow {
+  box-shadow: 0 0 20px -3px rgba(250, 204, 21, 0.35);
+}
+
+.glow-blue {
+  box-shadow: 0 0 20px -3px rgba(59, 130, 246, 0.35);
+}
+
+.border-yellow-glow {
+  border-color: rgba(250, 204, 21, 0.4);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.15);
+}
+
+.border-blue-glow {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);
+}
+
+/* Leaflet map styles */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  background: #070d18 !important;
+  font-family: inherit;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5) !important;
+}
+
+.leaflet-popup-tip {
+  background: #0f172a !important;
+}
+
+/* Print optimizations for official MHA reports */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+}
+
+/* =========================================================
+   PREMIUM WHITE / LIGHT MODE ARCHITECTURE
+   ========================================================= */
+html.light body {
+  background-color: #f8fafc !important;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(217, 119, 6, 0.05) 0%, transparent 35%),
+    radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.04) 0%, transparent 50%) !important;
+  color: #0f172a !important;
+}
+
+/* Light mode primary card & surface overrides (eliminating dark gradients) */
+html.light [class*="via-[#0b183"],
+html.light [class*="via-[#0c193"],
+html.light [class*="via-[#0c183"],
+html.light [class*="via-[#122347"],
+html.light [class*="from-[#0c183"],
+html.light [class*="from-[#0c193"],
+html.light [class*="from-[#0c1a38]"],
+html.light [class*="to-[#07112"],
+html.light [class*="to-[#0c1836]"],
+html.light [class*="to-[#0c1838]"] {
+  background-image: none !important;
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03) !important;
+}
+
+/* Base surface color mappings */
+html.light .bg-command-950,
+html.light .bg-command-950\/90,
+html.light .bg-command-950\/80,
+html.light .bg-command-950\/60,
+html.light .bg-command-950\/40 {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .bg-command-900,
+html.light .bg-command-900\/95,
+html.light .bg-command-900\/90,
+html.light .bg-command-900\/80 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .bg-command-850 {
+  background-color: #f1f5f9 !important;
+}
+
+html.light .bg-command-800 {
+  background-color: #e2e8f0 !important;
+}
+
+html.light .bg-blue-950,
+html.light .bg-blue-950\/80,
+html.light .bg-blue-950\/70,
+html.light .bg-blue-950\/60,
+html.light .bg-blue-950\/50,
+html.light .bg-blue-950\/40 {
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+}
+
+html.light .bg-slate-950,
+html.light .bg-slate-950\/60,
+html.light .bg-slate-950\/40 {
+  background-color: #f1f5f9 !important;
+}
+
+html.light .bg-slate-900,
+html.light .bg-slate-900\/60 {
+  background-color: #f8fafc !important;
+}
+
+/* MULTI-COLOR AMBIENT BACKGROUND FOR WHITE MODE */
+html.light body,
+html.light .multi-color-bg-light {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.11) 0px, transparent 45%),
+    radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.09) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 45%),
+    radial-gradient(at 50% 30%, rgba(14, 165, 233, 0.07) 0px, transparent 55%),
+    radial-gradient(#cbd5e1 0.75px, transparent 0.75px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 24px 24px;
+  background-attachment: fixed;
+}
+
+/* Light mode crisp border system */
+html.light .border-slate-800,
+html.light .border-slate-700,
+html.light [class*="border-blue-900"],
+html.light [class*="border-blue-800"],
+html.light [class*="border-cyberblue-900"],
+html.light [class*="border-cyberblue-800"],
+html.light [class*="border-cyberblue-700"] {
+  border-color: #e2e8f0 !important;
+}
+
+/* Light mode elevated shadows replacing dark glowing borders */
+html.light .border-blue-glow {
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03) !important;
+}
+
+html.light .border-yellow-glow {
+  border-color: #fcd34d !important;
+  box-shadow: 0 4px 16px -2px rgba(217, 119, 6, 0.12), 0 0 0 1px rgba(217, 119, 6, 0.25) !important;
+}
+
+html.light .glow-yellow {
+  box-shadow: 0 4px 18px -2px rgba(217, 119, 6, 0.15), 0 0 0 1px rgba(245, 158, 11, 0.3) !important;
+}
+
+html.light .glow-blue {
+  box-shadow: 0 4px 18px -2px rgba(37, 99, 235, 0.15), 0 0 0 1px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* PRECISE TYPOGRAPHY LEGIBILITY IN WHITE MODE */
+/* Headings, paragraphs, spans on light backgrounds without dark containers */
+html.light h1.text-white:not([class*="bg-"]):not([class*="from-"]),
+html.light h2.text-white:not([class*="bg-"]):not([class*="from-"]),
+html.light h3.text-white:not([class*="bg-"]):not([class*="from-"]),
+html.light h4.text-white:not([class*="bg-"]):not([class*="from-"]),
+html.light p.text-white:not([class*="bg-"]):not([class*="from-"]),
+html.light strong.text-white:not([class*="bg-"]):not([class*="from-"]),
+html.light td.text-white:not([class*="bg-"]):not([class*="from-"]),
+html.light th.text-white:not([class*="bg-"]):not([class*="from-"]),
+html.light span.text-white:not([class*="bg-"]):not([class*="from-"]),
+html.light div.text-white:not([class*="bg-"]):not([class*="from-"]) {
+  color: #0f172a !important; /* Rich deep slate for high contrast on light backgrounds */
+}
+
+/* Ensure buttons and elements with explicit solid dark backgrounds keep white text */
+html.light button.text-white,
+html.light a.text-white,
+html.light .bg-blue-600.text-white,
+html.light .bg-blue-700.text-white,
+html.light .bg-emerald-600.text-white,
+html.light .bg-purple-600.text-white,
+html.light .bg-slate-800.text-white,
+html.light .bg-slate-900.text-white,
+html.light .bg-slate-950.text-white,
+html.light .bg-black.text-white {
+  color: #ffffff !important;
+}
+
+/* Official Transparent Red Directive Badge Styling */
+.directive-urgent-badge {
+  background-color: rgba(239, 68, 68, 0.12) !important;
+  border: 2px solid rgba(239, 68, 68, 0.55) !important;
+  border-radius: 9999px !important;
+  color: #991b1b !important;
+}
+
+html.dark .directive-urgent-badge {
+  background-color: rgba(127, 29, 29, 0.45) !important;
+  border-color: rgba(248, 113, 113, 0.6) !important;
+  border-radius: 9999px !important;
+  color: #fca5a5 !important;
+}
+
+.directive-urgent-badge,
+.directive-urgent-badge * {
+  color: #991b1b !important;
+}
+
+html.dark .directive-urgent-badge,
+html.dark .directive-urgent-badge * {
+  color: #fca5a5 !important;
+}
+
+html.light .text-slate-100 {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-200 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-300 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-400 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-500 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-600 {
+  color: #0f172a !important;
+}
+
+/* Card Surface Opacity: Shields text from background transparency */
+html.light .bg-white {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+}
+
+html.dark .bg-command-900,
+html.dark [class*="bg-command-900/"] {
+  background-color: rgba(10, 20, 44, 0.94) !important;
+}
+
+/* Targeted solid action buttons with white text in light mode */
+html.light button.bg-blue-600,
+html.light button.bg-blue-700,
+html.light button.bg-red-600,
+html.light button.bg-emerald-600,
+html.light button.bg-purple-600,
+html.light button[class*="from-purple-600"],
+html.light button[class*="from-blue-600"] {
+  color: #ffffff !important;
+}
+
+html.light button.bg-blue-600 *,
+html.light button.bg-blue-700 *,
+html.light button.bg-red-600 *,
+html.light button.bg-emerald-600 *,
+html.light button.bg-purple-600 *,
+html.light button[class*="from-purple-600"] *,
+html.light button[class*="from-blue-600"] * {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* SIDEBAR NAVIGATION BUTTONS: 100% Guaranteed High Contrast in Light Mode */
+html.light .sidebar-item-btn {
+  color: #0f172a !important;
+  background-color: transparent;
+}
+html.light .sidebar-item-btn span {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+html.light .sidebar-item-btn svg {
+  color: #2563eb !important;
+  stroke: #2563eb !important;
+}
+html.light .sidebar-item-btn:hover {
+  background-color: #f1f5f9 !important;
+}
+html.light .sidebar-item-btn:hover span {
+  color: #1e3a8a !important;
+}
+html.light .sidebar-item-btn:hover svg {
+  color: #1d4ed8 !important;
+  stroke: #1d4ed8 !important;
+}
+html.light .sidebar-item-btn.is-active {
+  background-color: #dbeafe !important;
+  border-color: #93c5fd !important;
+  border-left-color: #d97706 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
+}
+html.light .sidebar-item-btn.is-active span {
+  color: #1e3a8a !important;
+  font-weight: 800 !important;
+}
+html.light .sidebar-item-btn.is-active svg {
+  color: #1d4ed8 !important;
+  stroke: #1d4ed8 !important;
+}
+
+/* Yellow and Amber action buttons */
+html.light button[class*="from-yellow"],
+html.light button[class*="from-amber"],
+html.light button[class*="from-yellow"] *,
+html.light button[class*="from-amber"] *,
+html.light .text-slate-950 {
+  color: #020617 !important;
+}
+
+html.light button[class*="from-yellow"] svg,
+html.light button[class*="from-amber"] svg {
+  color: #020617 !important;
+  stroke: #020617 !important;
+}
+
+/* Rich Saturated Amber / Yellow: High contrast on white */
+html.light :not(button):not([class*="from-yellow"]):not([class*="from-amber"]) > .text-yellow-400,
+html.light :not(button):not([class*="from-yellow"]):not([class*="from-amber"]) > .text-yellow-300,
+html.light :not(button):not([class*="from-yellow"]):not([class*="from-amber"]) > .text-cyberyellow-400,
+html.light :not(button):not([class*="from-yellow"]):not([class*="from-amber"]) > .text-cyberyellow-300 {
+  color: #b45309 !important; /* Deep saturated golden amber (WCAG AAA contrast) */
+}
+
+/* Standalone pale blues become rich royal cobalt blue on white */
+html.light p.text-blue-200,
+html.light span.text-blue-200,
+html.light span.text-blue-300,
+html.light div.text-blue-200,
+html.light div.text-blue-300 {
+  color: #1d4ed8 !important; /* Royal cobalt blue */
+}
+
+/* Rich Forest Emerald */
+html.light span.text-emerald-400,
+html.light span.text-emerald-300,
+html.light span.text-green-400 {
+  color: #15803d !important; /* Emerald 700 */
+}
+
+/* Rich Crimson Red */
+html.light span.text-red-400,
+html.light span.text-red-300 {
+  color: #dc2626 !important; /* Red 600 */
+}
+
+/* Light mode Table styling */
+html.light thead,
+html.light thead tr {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+html.light tbody tr:hover {
+  background-color: #f8fafc !important;
+}
+
+html.light .divide-blue-900\/30 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #f1f5f9 !important;
+}
+
+/* Form inputs in light mode */
+html.light input:not([type="range"]),
+html.light select,
+html.light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light input:not([type="range"]):focus,
+html.light select:focus,
+html.light textarea:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* White mode scrollbars */
+html.light ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+html.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-color: #e2e8f0;
+}
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* White mode Leaflet popups and container */
+html.light .leaflet-container {
+  background: #f8fafc !important;
+}
+html.light .leaflet-popup-content-wrapper {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+}
+html.light .leaflet-popup-tip {
+  background: #ffffff !important;
+}
+
+/* =========================================================
+   DYNAMIC RADAR & TACTICAL ANIMATION ENGINE
+   ========================================================= */
+@keyframes radar-sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-radar-sweep {
+  animation: radar-sweep 6s linear infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 0.3; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes float-tactical {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+.animate-tactical-float {
+  animation: float-tactical 4s ease-in-out infinite;
+}
+
+.hover-lift {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-3px) scale(1.01);
+}
+
+/* =========================================================
+   LIVING AURORA & DYNAMIC WHITE BACKGROUND ANIMATIONS
+   ========================================================= */
+@keyframes aurora-float-1 {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(75px, -60px) scale(1.14); }
+  66% { transform: translate(-50px, 50px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes aurora-float-2 {
+  0% { transform: translate(0px, 0px) scale(1.06); }
+  33% { transform: translate(-80px, 70px) scale(0.92); }
+  66% { transform: translate(60px, -50px) scale(1.16); }
+  100% { transform: translate(0px, 0px) scale(1.06); }
+}
+
+@keyframes aurora-float-3 {
+  0% { transform: translate(0px, 0px) scale(0.94); }
+  33% { transform: translate(65px, 80px) scale(1.2); }
+  66% { transform: translate(-70px, -60px) scale(0.86); }
+  100% { transform: translate(0px, 0px) scale(0.94); }
+}
+
+@keyframes aurora-float-4 {
+  0% { transform: translate(0px, 0px) scale(1.1); }
+  33% { transform: translate(-90px, -50px) scale(0.88); }
+  66% { transform: translate(50px, 90px) scale(1.14); }
+  100% { transform: translate(0px, 0px) scale(1.1); }
+}
+
+@keyframes tactical-grid-drift {
+  0% { background-position: 0px 0px; }
+  100% { background-position: 56px 56px; }
+}
+
+/* =========================================================
+   LIVE INDIAN PATRIOTIC SKY BACKGROUND ENGINE ANIMATIONS
+   ========================================================= */
+
+/* Atmospheric Clouds Drifting */
+@keyframes cloud-drift-1 {
+  0% { transform: translateX(-15%); }
+  50% { transform: translateX(25%); }
+  100% { transform: translateX(-15%); }
+}
+.animate-cloud-drift-1 {
+  animation: cloud-drift-1 50s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes cloud-drift-2 {
+  0% { transform: translateX(20%); }
+  50% { transform: translateX(-20%); }
+  100% { transform: translateX(20%); }
+}
+.animate-cloud-drift-2 {
+  animation: cloud-drift-2 70s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Rotating Holographic Radar Sweep */
+@keyframes radar-sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animate-radar-sweep {
+  animation: radar-sweep 14s linear infinite;
+  will-change: transform;
+}
+
+/* Waving Tiranga Flag Cloth Billow */
+@keyframes flag-billow {
+  0% {
+    transform: perspective(700px) rotateY(0deg) skewY(0deg);
+  }
+  25% {
+    transform: perspective(700px) rotateY(10deg) skewY(1.5deg);
+  }
+  50% {
+    transform: perspective(700px) rotateY(-8deg) skewY(-2deg);
+  }
+  75% {
+    transform: perspective(700px) rotateY(8deg) skewY(1.2deg);
+  }
+  100% {
+    transform: perspective(700px) rotateY(0deg) skewY(0deg);
+  }
+}
+.animate-flag-billow {
+  animation: flag-billow 4.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Ashoka Chakra Gentle Rotation */
+@keyframes chakra-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animate-chakra-spin {
+  animation: chakra-spin 25s linear infinite;
+  will-change: transform;
+}
+
+/* Cloth Waving Shimmer Highlight */
+@keyframes flag-shimmer {
+  0%, 100% { opacity: 0.15; transform: translateX(-4%) scaleY(0.98); }
+  50% { opacity: 0.35; transform: translateX(4%) scaleY(1.02); }
+}
+.animate-flag-shimmer {
+  animation: flag-shimmer 4s ease-in-out infinite;
+}
+
+/* 5-Jet IAF Squadron Flyover with Curved Tri-Colour Smoke Plumes */
+@keyframes jets-flyover-echelon {
+  0% {
+    transform: translate(-45vw, 45vh) rotate(-26deg) scale(0.78);
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  48% {
+    transform: translate(25vw, -8vh) rotate(-26deg) scale(1.0);
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(110vw, -65vh) rotate(-26deg) scale(1.18);
+    opacity: 0;
+  }
+}
+.animate-jets-flyover-echelon {
+  animation: jets-flyover-echelon 12s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+  will-change: transform, opacity;
+}
+
+/* Supersonic Twin Afterburner Flame Pulsing */
+@keyframes afterburner-flicker {
+  0%, 100% {
+    transform: scale(1, 1);
+    opacity: 0.85;
+    filter: drop-shadow(0 0 6px #ff5500);
+  }
+  50% {
+    transform: scale(1.3, 0.9);
+    opacity: 1;
+    filter: drop-shadow(0 0 14px #38bdf8);
+  }
+}
+.animate-afterburner {
+  animation: afterburner-flicker 0.18s ease-in-out infinite alternate;
+}
+
+/* Smoke Billow Pulse */
+@keyframes smoke-billow {
+  0%, 100% {
+    opacity: 0.82;
+    transform: scaleY(0.96);
+  }
+  50% {
+    opacity: 0.98;
+    transform: scaleY(1.04);
+  }
+}
+.animate-smoke-billow {
+  animation: smoke-billow 3.5s ease-in-out infinite;
+}
+
+/* =========================================================
+   DYNAMIC INDIAN FLAG LOGO & ASHOKA CHAKRA ANIMATIONS
+   ========================================================= */
+@keyframes chakra-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes flag-shimmer {
+  0% {
+    transform: translateX(-100%) skewX(-25deg);
+  }
+  50%, 100% {
+    transform: translateX(200%) skewX(-25deg);
+  }
+}
+
+@keyframes brand-glow-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(255, 153, 51, 0.45)) drop-shadow(0 0 12px rgba(19, 136, 8, 0.25));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(255, 153, 51, 0.75)) drop-shadow(0 0 18px rgba(56, 189, 248, 0.45));
+  }
+}
+
+.animate-spin-slow {
+  animation: chakra-spin 18s linear infinite !important;
+}
+
+.animate-shimmer {
+  animation: flag-shimmer 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+.animate-brand-glow {
+  animation: brand-glow-pulse 4s ease-in-out infinite !important;
+}
+
+@keyframes radar-sweep {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-radar-sweep {
+  animation: radar-sweep 8s linear infinite !important;
+}
+
+/* =========================================================
+   OFFICIAL GOVERNMENT REPORT PRINT ENGINE (@media print)
+   Ultra-Fast Sub-Second Print Performance Overrides
+   ========================================================= */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 10mm 10mm 10mm;
+  }
+
+  /* Strip all heavy CPU/GPU filter layers to prevent multi-second browser freeze */
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Completely hide live sky background, navbars, sidebars, controls */
+  .live-sky-bg,
+  .no-print,
+  nav,
+  aside,
+  header {
+    display: none !important;
+  }
+
+  /* Avoid page breaks inside critical report sections and table rows */
+  .print-avoid-break,
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* High-contrast borders for printing */
+  .print-border-black {
+    border-color: #000000 !important;
+  }
+}

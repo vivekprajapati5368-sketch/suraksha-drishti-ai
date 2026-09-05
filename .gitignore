@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Build output
+frontend/dist/
+dist/
+
+# Local database and data directory
+data/
+backend/data/
+*.db
+*.db-wal
+*.db-shm
+
+# Environment & Tunnel logs
+.env
+*.log
+cloudflared.exe
+LIVE_URL.txt
+
+# Editor / OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
