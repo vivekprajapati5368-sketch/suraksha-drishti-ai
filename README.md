@@ -2,7 +2,20 @@
 ### AI-Powered Disaster Risk Intelligence & Relocation Decision Platform
 **Smart India Hackathon (SIH 2026)** | **Problem ID:** SIH26191  
 **Category:** Software | **Theme:** Disaster Management  
-**Target Ministry:** Ministry of Home Affairs (MHA) / National Disaster Management Authority (NDMA)
+**Target Ministry:** Ministry of Home Affairs (MHA) / National Disaster Management Authority (NDMA)  
+**Lead Developer:** **VIVEK KUMAR**
+
+---
+
+## 🌐 Live Cloud Deployment (24/7 Global Access)
+
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Active_24%2F7-emerald?style=for-the-badge&logo=githubpages&logoColor=white)](https://vivekprajapati5368-sketch.github.io/suraksha-drishti-ai/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub_Repository-suraksha--drishti--ai-blue?style=for-the-badge&logo=github)](https://github.com/vivekprajapati5368-sketch/suraksha-drishti-ai)
+[![License](https://img.shields.io/badge/Status-Operational_National_Telemetry-amber?style=for-the-badge)](https://vivekprajapati5368-sketch.github.io/suraksha-drishti-ai/)
+
+- **Permanent Live URL**: **[https://vivekprajapati5368-sketch.github.io/suraksha-drishti-ai/](https://vivekprajapati5368-sketch.github.io/suraksha-drishti-ai/)**
+- **Direct Official Reports Page**: **[https://vivekprajapati5368-sketch.github.io/suraksha-drishti-ai/reports](https://vivekprajapati5368-sketch.github.io/suraksha-drishti-ai/reports)**
+- *Hosted 100% on GitHub's global edge infrastructure. Accessible 24/7 from ANY phone, laptop, or system on any network, even when your local computer is powered off.*
 
 ---
 
@@ -235,5 +248,8 @@ Pre-seeded with real-world disaster hotspots clearly tagged as prototype data:
 
 ## 📜 10. License & Attribution
 
-Developed for **Smart India Hackathon 2026** under Problem Statement **SIH26191**.  
-Built in adherence with the guidelines of the **Ministry of Home Affairs (MHA)** and the **National Disaster Management Authority (NDMA)**.
+- **Project:** SURAKSHA DRISHTI . AI (सुरक्षा दृष्टि . एआई)
+- **Architect & Lead Developer:** **VIVEK KUMAR**
+- **Initiative:** Smart India Hackathon (SIH 2026) | Problem Statement **SIH26191**
+- **Standards:** Built in strict adherence with guidelines from the **Ministry of Home Affairs (MHA)** and **National Disaster Management Authority (NDMA)**.
+- **License:** MIT License. Free for evaluation, research, and non-commercial disaster risk reduction applications.
