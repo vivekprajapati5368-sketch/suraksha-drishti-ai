@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Shield, Lock, Mail, Phone, ArrowRight, CheckCircle2, AlertCircle, 
   KeyRound, RefreshCw, Smartphone, Sparkles, Sun, Moon, User, 
-  UserPlus, UserCheck, Code2, ShieldAlert, Radio, Building2, Check
+  UserPlus, UserCheck, Code2, ShieldAlert, Radio, Building2, Check, Compass
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -11,7 +11,7 @@ import { DynamicMouseText } from '../components/common/DynamicMouseText';
 import { LiveIndianSkyBackground } from '../components/common/LiveIndianSkyBackground';
 
 export function LoginPage({ onLoginSuccess }) {
-  const { login, register, sendOtp, verifyOtp, loading, DEMO_USERS } = useAuth();
+  const { login, guestLogin, register, sendOtp, verifyOtp, loading, DEMO_USERS } = useAuth();
   const { isDark, toggleTheme } = useTheme();
 
   // Primary Mode: 'signin' | 'signup'
@@ -38,7 +38,7 @@ export function LoginPage({ onLoginSuccess }) {
   const [regEmail, setRegEmail] = useState('');
   const [regPhone, setRegPhone] = useState('');
   const [regPassword, setRegPassword] = useState('');
-  const [regRole, setRegRole] = useState('user');
+  const [regRole, setRegRole] = useState('new_user');
   const [regDepartment, setRegDepartment] = useState('Civilian & Community Disaster Response');
 
   // Status & Error Messages
@@ -153,19 +153,42 @@ export function LoginPage({ onLoginSuccess }) {
   };
 
   // 1-Click Fast Evaluator Persona Login
-  const handleQuickLogin = async (credEmail, credPass) => {
+  const handleQuickLogin = async (personaId, credEmail, credPass) => {
     setErrorMsg('');
     setSuccessMsg('');
+    if (personaId === 'guest') {
+      if (guestLogin) {
+        guestLogin();
+        if (onLoginSuccess) onLoginSuccess();
+        return;
+      }
+    }
     setEmail(credEmail);
     setPassword(credPass);
     const res = await login(credEmail, credPass);
     if (res.success && onLoginSuccess) {
       onLoginSuccess();
+    } else if (res && !res.success) {
+      setErrorMsg(res.message || 'Login failed');
     }
   };
 
-  // Shortcut Persona List
+  // Shortcut Persona List (Only Guest, Admin, Developer, and New User)
   const evaluatorPersonas = [
+    {
+      id: 'guest',
+      roleTag: 'Guest Login',
+      name: 'Guest Explorer',
+      title: 'Public Citizen & Disaster Awareness Visitor',
+      department: 'Public Citizen & Visitor Clearance',
+      email: 'guest@surakshadrishti.in',
+      phone: '+91 99990 00000',
+      pass: 'Guest',
+      icon: UserCheck,
+      badgeClass: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/40',
+      borderHover: 'hover:border-emerald-400 dark:hover:border-emerald-400',
+      iconColor: 'text-emerald-500 dark:text-emerald-400'
+    },
     {
       id: 'admin',
       roleTag: 'Admin',
@@ -179,48 +202,6 @@ export function LoginPage({ onLoginSuccess }) {
       badgeClass: 'bg-amber-500/15 text-amber-700 dark:text-cyberyellow-300 border-amber-500/40',
       borderHover: 'hover:border-amber-400 dark:hover:border-cyberyellow-400',
       iconColor: 'text-amber-500 dark:text-cyberyellow-400'
-    },
-    {
-      id: 'authority',
-      roleTag: 'Authority',
-      name: 'Col. Sunita Rawat',
-      title: 'Commanding Officer & SDRF Liaison',
-      department: 'State Disaster Response Force (SDRF)',
-      email: 'authority@surakshadrishti.in',
-      phone: '+91 98220 20262',
-      pass: 'Authority123',
-      icon: Shield,
-      badgeClass: 'bg-blue-500/15 text-blue-700 dark:text-cyan-300 border-blue-500/40',
-      borderHover: 'hover:border-blue-400 dark:hover:border-cyan-400',
-      iconColor: 'text-blue-500 dark:text-cyan-400'
-    },
-    {
-      id: 'officer',
-      roleTag: 'Officer',
-      name: 'Inspector Vikram Negi',
-      title: 'Field Team Commander',
-      department: 'Chamoli Quick Response Field Command',
-      email: 'officer@surakshadrishti.in',
-      phone: '+91 98330 20263',
-      pass: 'Officer123',
-      icon: Radio,
-      badgeClass: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/40',
-      borderHover: 'hover:border-emerald-400 dark:hover:border-emerald-400',
-      iconColor: 'text-emerald-500 dark:text-emerald-400'
-    },
-    {
-      id: 'user',
-      roleTag: 'User',
-      name: 'Aarav Sharma',
-      title: 'Civilian Observer & Warden',
-      department: 'Civil Defense & Community Volunteer Network',
-      email: 'user@surakshadrishti.in',
-      phone: '+91 98440 20264',
-      pass: 'User123',
-      icon: UserCheck,
-      badgeClass: 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/40',
-      borderHover: 'hover:border-purple-400 dark:hover:border-purple-400',
-      iconColor: 'text-purple-500 dark:text-purple-400'
     },
     {
       id: 'developer',
@@ -240,15 +221,15 @@ export function LoginPage({ onLoginSuccess }) {
       id: 'newUser',
       roleTag: 'New User',
       name: 'Pooja Joshi',
-      title: 'Registered Observer (First Login)',
-      department: 'Newly Enrolled Field Observer (Demo Provisioned)',
+      title: 'Registered Citizen (Access After Login)',
+      department: 'Newly Enrolled Citizen (Verified on Login)',
       email: 'newuser@surakshadrishti.in',
       phone: '+91 98660 20266',
       pass: 'NewUser123',
       icon: UserPlus,
-      badgeClass: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/40',
-      borderHover: 'hover:border-rose-400 dark:hover:border-rose-400',
-      iconColor: 'text-rose-500 dark:text-rose-400'
+      badgeClass: 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/40',
+      borderHover: 'hover:border-purple-400 dark:hover:border-purple-400',
+      iconColor: 'text-purple-500 dark:text-purple-400'
     }
   ];
 
@@ -313,6 +294,39 @@ export function LoginPage({ onLoginSuccess }) {
         {/* Main Card Container */}
         <div className="bg-white/95 dark:bg-command-900/95 backdrop-blur-xl border border-slate-200 dark:border-blue-500/30 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-5">
           
+          {/* Quick 1-Click Instant Guest Access Banner */}
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 dark:from-emerald-950/40 dark:via-teal-950/30 dark:to-emerald-950/40 border-2 border-emerald-400/60 dark:border-emerald-500/40 flex items-center justify-between gap-3 shadow-sm">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="p-2 rounded-xl bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950 flex-shrink-0 shadow-sm">
+                <Compass className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-sans font-black tracking-wide text-xs text-slate-950 dark:text-white">
+                    GUEST ACCESS (EXPLORE PLATFORM)
+                  </span>
+                  <span className="text-[9.5px] font-mono font-black uppercase px-1.5 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/80 dark:text-emerald-300 rounded-md border border-emerald-300 dark:border-emerald-600">
+                    NO LOGIN REQUIRED
+                  </span>
+                </div>
+                <span className="text-[11px] text-slate-600 dark:text-emerald-300/90 font-medium block truncate">
+                  Explore GIS maps, autonomous safety predictor & situation room
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (guestLogin) guestLogin();
+                if (onLoginSuccess) onLoginSuccess();
+              }}
+              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider transition flex items-center gap-1.5 shadow-md flex-shrink-0 cursor-pointer"
+            >
+              <span>Guest Login</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
           {/* PRIMARY TOGGLE: [ SIGN IN ] vs [ SIGN UP (NEW USER) ] */}
           <div className="flex p-1.5 rounded-2xl bg-slate-100 dark:bg-command-950 border border-slate-200 dark:border-blue-900/60 text-xs font-mono font-black">
             <button
@@ -600,10 +614,10 @@ export function LoginPage({ onLoginSuccess }) {
               <div className="border-b border-slate-200 dark:border-blue-900/50 pb-2">
                 <span className="text-xs font-mono font-black uppercase text-amber-700 dark:text-cyberyellow-400 flex items-center gap-1.5">
                   <UserPlus className="w-4 h-4" />
-                  NEW CREDENTIAL ONBOARDING
+                  NEW USER ONBOARDING (ACCESS AFTER LOGIN)
                 </span>
                 <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
-                  Register as a civilian observer, field responder, authority liaison, or AI engineer.
+                  Register below. All verified new users gain immediate, full platform access upon login.
                 </p>
               </div>
 
@@ -666,13 +680,11 @@ export function LoginPage({ onLoginSuccess }) {
                 <label className="block text-slate-800 dark:text-cyberyellow-300 font-mono mb-1.5 font-bold">
                   ASSIGNED ROLE / CLEARANCE LEVEL:
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {[
-                    { id: 'user', label: 'Civilian User', icon: UserCheck, color: 'border-purple-400 text-purple-700 dark:text-purple-300' },
-                    { id: 'field_officer', label: 'Field Officer', icon: Radio, color: 'border-emerald-400 text-emerald-700 dark:text-emerald-300' },
-                    { id: 'authority', label: 'Authority', icon: Shield, color: 'border-blue-400 text-blue-700 dark:text-blue-300' },
-                    { id: 'admin', label: 'Administrator', icon: ShieldAlert, color: 'border-amber-400 text-amber-700 dark:text-amber-300' },
-                    { id: 'developer', label: 'AI Developer', icon: Code2, color: 'border-sky-400 text-sky-700 dark:text-sky-300' }
+                    { id: 'new_user', label: 'New User / Citizen', icon: UserCheck },
+                    { id: 'developer', label: 'AI Developer', icon: Code2 },
+                    { id: 'admin', label: 'Administrator', icon: ShieldAlert }
                   ].map(roleItem => {
                     const Icon = roleItem.icon;
                     const isSelected = regRole === roleItem.id;
@@ -738,7 +750,7 @@ export function LoginPage({ onLoginSuccess }) {
                 disabled={loading}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black tracking-wider uppercase transition shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 text-xs cursor-pointer mt-2"
               >
-                {loading ? 'Creating Official Account...' : 'Register Account & Launch'}
+                {loading ? 'Creating Official Account...' : 'Register Account & Enter'}
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
@@ -746,7 +758,7 @@ export function LoginPage({ onLoginSuccess }) {
 
           {/* ========================================================
               3. 1-CLICK FAST EVALUATOR SHORTCUTS
-              (Admin, User, New User, Authority, Developer)
+              (Guest, Admin, Developer, New User)
              ======================================================== */}
           <div className="pt-4 border-t border-slate-200 dark:border-blue-900/50 space-y-2.5">
             <div className="flex items-center justify-between">
@@ -760,7 +772,7 @@ export function LoginPage({ onLoginSuccess }) {
             </div>
 
             <p className="text-[11px] text-slate-500 dark:text-slate-400 font-sans">
-              Select any verified official persona to simulate specific role permissions:
+              Authorized clearance personas: Guest Login, Admin, Developer, and New User:
             </p>
 
             {/* Persona Cards Grid */}
@@ -771,7 +783,7 @@ export function LoginPage({ onLoginSuccess }) {
                   <button
                     key={persona.id}
                     type="button"
-                    onClick={() => handleQuickLogin(persona.email, persona.pass)}
+                    onClick={() => handleQuickLogin(persona.id, persona.email, persona.pass)}
                     className={`p-3 rounded-2xl bg-slate-50 hover:bg-white dark:bg-command-950/80 dark:hover:bg-blue-950/60 border border-slate-200 dark:border-blue-900/60 ${persona.borderHover} text-left transition-all flex items-start justify-between gap-2 group shadow-sm hover:shadow-md cursor-pointer`}
                   >
                     <div className="flex items-start gap-2.5 min-w-0">

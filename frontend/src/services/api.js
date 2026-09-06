@@ -299,8 +299,86 @@ function getFallbackData(endpoint, method = 'GET', body = null) {
     return { success: true, data: mockData.riskWeights };
   }
 
-  // 11. Auth
-  if (cleanEndpoint.startsWith('/auth/me') || cleanEndpoint.startsWith('/auth/login') || cleanEndpoint.startsWith('/auth/verify-otp') || cleanEndpoint.startsWith('/auth/send-otp')) {
+  // 11. Auth Fallback
+  if (cleanEndpoint.startsWith('/auth/register')) {
+    const newUser = {
+      id: Date.now(),
+      name: body?.name || 'New Registered User',
+      email: body?.email || 'newuser@surakshadrishti.in',
+      phone: body?.phone || '+91 98765 43210',
+      role: body?.role === 'developer' || body?.role === 'admin' ? body.role : 'new_user',
+      department: body?.department || 'Civilian & Community Disaster Response'
+    };
+    return {
+      success: true,
+      token: 'demo-registered-user-token',
+      user: newUser,
+      message: 'Account registered and authorized successfully'
+    };
+  }
+
+  if (cleanEndpoint.startsWith('/auth/login')) {
+    const email = body?.email?.toLowerCase() || '';
+    if (email.includes('authority') || email.includes('officer')) {
+      return {
+        success: false,
+        message: 'Access Restricted: Only Guest Login, Admin, Developer, and New Users can access this platform.'
+      };
+    }
+    if (email.includes('developer') || email.includes('dev123') || email.includes('vivek')) {
+      return {
+        success: true,
+        token: 'demo-developer-token',
+        user: {
+          id: 2,
+          name: 'Vivek Kumar',
+          email: 'developer@surakshadrishti.in',
+          role: 'developer',
+          department: 'Chief AI Architect & Core System Engineering'
+        }
+      };
+    }
+    if (email.includes('guest')) {
+      return {
+        success: true,
+        token: 'demo-guest-token',
+        user: {
+          id: 10,
+          name: 'Guest Explorer',
+          email: 'guest@surakshadrishti.in',
+          role: 'guest',
+          department: 'Public Citizen & Disaster Awareness Visitor'
+        }
+      };
+    }
+    if (email.includes('newuser') || email.includes('pooja')) {
+      return {
+        success: true,
+        token: 'demo-newuser-token',
+        user: {
+          id: 3,
+          name: 'Pooja Joshi',
+          email: 'newuser@surakshadrishti.in',
+          role: 'new_user',
+          department: 'Newly Enrolled Citizen (Verified on Login)'
+        }
+      };
+    }
+    // Default / Admin
+    return {
+      success: true,
+      token: 'demo-admin-token',
+      user: {
+        id: 1,
+        name: 'Dr. Rajesh Verma, IAS',
+        email: 'admin@surakshadrishti.in',
+        role: 'admin',
+        department: 'National Disaster Management Authority (NDMA)'
+      }
+    };
+  }
+
+  if (cleanEndpoint.startsWith('/auth/verify-otp') || cleanEndpoint.startsWith('/auth/send-otp') || cleanEndpoint.startsWith('/auth/me')) {
     return {
       success: true,
       token: 'demo-pki-token-2026',

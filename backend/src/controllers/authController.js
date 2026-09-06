@@ -36,6 +36,14 @@ function login(req, res) {
       return res.status(401).json({ success: false, message: 'Invalid email or password.' });
     }
 
+    const ALLOWED_ROLES = ['admin', 'developer', 'guest', 'new_user', 'user'];
+    if (!ALLOWED_ROLES.includes(user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access Restricted: Only Guest login, Admin, Developer, and New Users can access this platform.'
+      });
+    }
+
     // Update last_login in database
     db.prepare('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?').run(user.id);
 
@@ -107,13 +115,13 @@ function sendOtp(req, res) {
       // New user registering via Gmail or Mobile Phone - automatically provision and save to SQLite!
       const defaultSalt = bcrypt.genSaltSync(10);
       const defaultHash = bcrypt.hashSync('Suraksha@2026', defaultSalt);
-      const generatedEmail = isEmail ? cleanEmail : `officer_${cleanId.replace(/\D/g, '').slice(-10)}@surakshadrishti.in`;
+      const generatedEmail = isEmail ? cleanEmail : `user_${cleanId.replace(/\D/g, '').slice(-10)}@surakshadrishti.in`;
       const generatedPhone = isEmail ? null : cleanPhone;
-      const userName = isEmail ? cleanEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : `Officer (${cleanId.slice(-4)})`;
+      const userName = isEmail ? cleanEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : `Citizen (${cleanId.slice(-4)})`;
 
       const info = db.prepare(`
         INSERT INTO users (name, email, phone, password_hash, role, department, otp_code, otp_expires_at)
-        VALUES (?, ?, ?, ?, 'authority', 'Regional Disaster Management Division', ?, ?)
+        VALUES (?, ?, ?, ?, 'new_user', 'Civilian & Community Disaster Response', ?, ?)
       `).run(userName, generatedEmail, generatedPhone, defaultHash, otp, expiresAt);
 
       user = db.prepare('SELECT * FROM users WHERE id = ?').get(info.lastInsertRowid);
@@ -168,6 +176,14 @@ function verifyOtp(req, res) {
     // Check OTP expiration
     if (user.otp_expires_at && new Date(user.otp_expires_at) < new Date()) {
       return res.status(401).json({ success: false, message: 'Verification OTP has expired. Please request a new code.' });
+    }
+
+    const ALLOWED_ROLES = ['admin', 'developer', 'guest', 'new_user', 'user'];
+    if (!ALLOWED_ROLES.includes(user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access Restricted: Only Guest login, Admin, Developer, and New Users can access this platform.'
+      });
     }
 
     // Clear OTP and record login in SQLite
@@ -261,7 +277,8 @@ function register(req, res) {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, salt);
     const cleanPhone = phone ? normalizePhone(phone) : null;
-    const assignedRole = role || 'user';
+    const ALLOWED_REG_ROLES = ['admin', 'developer', 'new_user', 'user'];
+    const assignedRole = ALLOWED_REG_ROLES.includes(role) ? role : 'new_user';
     const assignedDept = department ? department.trim() : 'Civilian & Community Disaster Response';
 
     const info = db.prepare(`

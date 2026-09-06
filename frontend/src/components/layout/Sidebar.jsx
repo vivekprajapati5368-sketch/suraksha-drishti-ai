@@ -33,7 +33,7 @@ export function Sidebar({ currentPath, onNavigate, mobileOpen, onCloseMobile }) 
     { id: 'simulator', label: 'Calamity Alert Simulator', icon: AlertTriangle, path: '/simulator' },
     { id: 'analytics', label: 'Disaster Trends & Analysis', icon: BarChart3, path: '/analytics' },
     { id: 'reports', label: 'MHA Decision Dossiers', icon: FileText, path: '/reports' },
-    { id: 'admin', label: 'Administration & Weights', icon: SlidersHorizontal, path: '/admin', roles: ['admin', 'authority'] }
+    { id: 'admin', label: 'Administration & Weights', icon: SlidersHorizontal, path: '/admin', roles: ['admin', 'developer'] }
   ];
 
   const filteredNav = navItems.filter(item => {

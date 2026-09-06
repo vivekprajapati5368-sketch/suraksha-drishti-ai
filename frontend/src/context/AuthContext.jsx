@@ -4,6 +4,16 @@ import { api } from '../services/api';
 const AuthContext = createContext(null);
 
 export const DEMO_USERS = {
+  guest: {
+    id: 10,
+    name: 'Guest Explorer',
+    email: 'guest@surakshadrishti.in',
+    phone: '+919999000000',
+    password: 'Guest',
+    role: 'guest',
+    department: 'Public Citizen & Disaster Awareness Visitor',
+    title: 'Guest Explorer (Public Access)'
+  },
   admin: {
     id: 1,
     name: 'Dr. Rajesh Verma, IAS',
@@ -14,38 +24,8 @@ export const DEMO_USERS = {
     department: 'National Disaster Management Authority (NDMA)',
     title: 'Principal Secretary & Commissioner'
   },
-  authority: {
-    id: 2,
-    name: 'Col. Sunita Rawat',
-    email: 'authority@surakshadrishti.in',
-    phone: '+919822020262',
-    password: 'Authority123',
-    role: 'authority',
-    department: 'State Disaster Response Force (SDRF)',
-    title: 'Commanding Officer & Liaison'
-  },
-  officer: {
-    id: 3,
-    name: 'Inspector Vikram Negi',
-    email: 'officer@surakshadrishti.in',
-    phone: '+919833020263',
-    password: 'Officer123',
-    role: 'field_officer',
-    department: 'Chamoli Quick Response Field Command',
-    title: 'Field Team Commander'
-  },
-  user: {
-    id: 4,
-    name: 'Aarav Sharma',
-    email: 'user@surakshadrishti.in',
-    phone: '+919844020264',
-    password: 'User123',
-    role: 'user',
-    department: 'Civil Defense & Volunteer Community Network',
-    title: 'Civilian Observer & Warden'
-  },
   developer: {
-    id: 5,
+    id: 2,
     name: 'Vivek Kumar',
     email: 'developer@surakshadrishti.in',
     phone: '+919855020265',
@@ -55,14 +35,14 @@ export const DEMO_USERS = {
     title: 'Lead System Architect & AI Engineer'
   },
   newUser: {
-    id: 6,
+    id: 3,
     name: 'Pooja Joshi',
     email: 'newuser@surakshadrishti.in',
     phone: '+919866020266',
     password: 'NewUser123',
-    role: 'user',
-    department: 'Newly Enrolled Field Observer (Demo Provisioned)',
-    title: 'Registered Observer (First Login)'
+    role: 'new_user',
+    department: 'Newly Enrolled Citizen (Verified on Login)',
+    title: 'New Registered User (First Login)'
   }
 };
 
@@ -103,12 +83,30 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
+  const ALLOWED_ROLES = ['admin', 'developer', 'guest', 'new_user', 'user'];
+
+  // 1-Click Instant Guest Login (Exploration without credentials)
+  const guestLogin = () => {
+    const guestUser = DEMO_USERS.guest;
+    setUser(guestUser);
+    setToken('guest-demo-token');
+    localStorage.setItem('suraksha_token', 'guest-demo-token');
+    localStorage.removeItem('suraksha_logged_out');
+    return { success: true, user: guestUser };
+  };
+
   // Standard Password Login
   const login = async (email, password) => {
     setLoading(true);
     try {
       const res = await api.login(email, password);
       if (res.success && res.token) {
+        if (!ALLOWED_ROLES.includes(res.user?.role)) {
+          return {
+            success: false,
+            message: 'Access Restricted: Only Guest Login, Admin, Developer, and New Users can access this platform.'
+          };
+        }
         setUser(res.user);
         setToken(res.token);
         localStorage.setItem('suraksha_token', res.token);
@@ -159,6 +157,12 @@ export function AuthProvider({ children }) {
     try {
       const res = await api.verifyOtp(identifier, otp);
       if (res.success && res.token) {
+        if (!ALLOWED_ROLES.includes(res.user?.role)) {
+          return {
+            success: false,
+            message: 'Access Restricted: Only Guest Login, Admin, Developer, and New Users can access this platform.'
+          };
+        }
         setUser(res.user);
         setToken(res.token);
         localStorage.setItem('suraksha_token', res.token);
@@ -167,15 +171,15 @@ export function AuthProvider({ children }) {
       }
       return { success: false, message: res.message || 'Invalid OTP code' };
     } catch (err) {
-      // Simulated OTP verification fallback for offline/demo
+      // Simulated OTP verification fallback for offline/demo (registers as new_user)
       const isEmail = identifier.includes('@');
       const u = {
         id: Math.floor(100 + Math.random() * 900),
-        name: isEmail ? identifier.split('@')[0].toUpperCase() : `Officer (${identifier.slice(-4)})`,
-        email: isEmail ? identifier : `officer_${identifier.slice(-4)}@surakshadrishti.in`,
+        name: isEmail ? identifier.split('@')[0].toUpperCase() : `Citizen (${identifier.slice(-4)})`,
+        email: isEmail ? identifier : `user_${identifier.slice(-4)}@surakshadrishti.in`,
         phone: isEmail ? null : identifier,
-        role: 'authority',
-        department: 'Regional Disaster Response Task Force'
+        role: 'new_user',
+        department: 'Civilian & Community Disaster Response'
       };
       setUser(u);
       setToken('demo-otp-token');
@@ -203,7 +207,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Register New User Account
+  // Register New User Account (Can access after login)
   const register = async (userData) => {
     setLoading(true);
     try {
@@ -222,10 +226,10 @@ export function AuthProvider({ children }) {
       // Local fallback for offline mode
       const newUser = {
         id: Date.now(),
-        name: userData.name || 'New Officer',
+        name: userData.name || 'New Registered User',
         email: userData.email,
         phone: userData.phone,
-        role: userData.role || 'user',
+        role: userData.role === 'developer' || userData.role === 'admin' ? userData.role : 'new_user',
         department: userData.department || 'Civilian Disaster Response Network',
         last_login: new Date().toISOString()
       };
@@ -263,6 +267,7 @@ export function AuthProvider({ children }) {
       token,
       loading,
       login,
+      guestLogin,
       register,
       sendOtp,
       verifyOtp,

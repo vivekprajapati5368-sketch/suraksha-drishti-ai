@@ -33,11 +33,12 @@ function seedData(forceReset = false) {
 
   console.log('[Seed] Seeding realistic demonstration data for Suraksha Drishti AI...');
 
-  // 1. Seed Demo Users
+  // 1. Seed Demo Users (Guest, Admin, Developer, New User)
   const salt = bcrypt.genSaltSync(10);
   const adminHash = bcrypt.hashSync('Admin123', salt);
-  const authorityHash = bcrypt.hashSync('Authority123', salt);
-  const officerHash = bcrypt.hashSync('Officer123', salt);
+  const devHash = bcrypt.hashSync('Dev123', salt);
+  const guestHash = bcrypt.hashSync('Guest', salt);
+  const newUserHash = bcrypt.hashSync('NewUser123', salt);
 
   const insertUser = db.prepare(`
     INSERT INTO users (name, email, phone, password_hash, role, department)
@@ -45,8 +46,9 @@ function seedData(forceReset = false) {
   `);
 
   insertUser.run('Dr. Rajesh Verma, IAS', 'admin@surakshadrishti.in', '+919811020261', adminHash, 'admin', 'National Disaster Management Authority (NDMA)');
-  insertUser.run('Col. Sunita Rawat', 'authority@surakshadrishti.in', '+919822020262', authorityHash, 'authority', 'State Disaster Response Force (SDRF)');
-  insertUser.run('Inspector Vikram Negi', 'officer@surakshadrishti.in', '+919833020263', officerHash, 'field_officer', 'Chamoli District Quick Response Team');
+  insertUser.run('Vivek Kumar', 'developer@surakshadrishti.in', '+919855020265', devHash, 'developer', 'Chief AI Architect & Core System Engineering');
+  insertUser.run('Guest Explorer', 'guest@surakshadrishti.in', '+919999000000', guestHash, 'guest', 'Public Citizen & Disaster Awareness Visitor');
+  insertUser.run('Pooja Joshi', 'newuser@surakshadrishti.in', '+919866020266', newUserHash, 'new_user', 'Newly Enrolled Citizen (Verified on Login)');
 
   // 2. Seed Safe Relocation Zones (Need IDs for foreign keys and matching)
   const safeZonesData = [
