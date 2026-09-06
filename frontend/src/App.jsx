@@ -100,19 +100,6 @@ function MainApp() {
         </main>
       </div>
 
-      {/* Floating Developer Credit Badge - Bottom Right Corner */}
-      <aside aria-label="Developer attribution" className="fixed bottom-3 right-4 z-40 no-print flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 dark:bg-command-900/95 backdrop-blur-md border-2 border-slate-300/90 dark:border-cyberblue-700/80 shadow-xl shadow-black/20 text-xs font-mono select-none hover:scale-105 transition-all duration-200 group">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-        </span>
-        <span className="text-slate-600 dark:text-slate-400 text-[11px] font-medium">
-          Developed by
-        </span>
-        <span className="font-extrabold text-slate-950 dark:text-cyberyellow-300 tracking-wide font-sans group-hover:text-blue-600 dark:group-hover:text-cyan-300 transition-colors">
-          VIVEK KUMAR
-        </span>
-      </aside>
     </div>
   );
 }
