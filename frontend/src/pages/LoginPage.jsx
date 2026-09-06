@@ -17,8 +17,15 @@ export function LoginPage({ onLoginSuccess }) {
   // Primary Mode: 'signin' | 'signup'
   const [authMode, setAuthMode] = useState('signin');
 
-  // Login Method Tab within Sign In: 'otp' | 'password'
-  const [loginMethod, setLoginMethod] = useState('otp');
+  // Login Method Tab within Sign In: 'password' | 'otp'
+  const [loginMethod, setLoginMethod] = useState('password');
+
+  // Selected Login Option: 'developer' | 'admin' (1. Developer, 2. Admin)
+  const [selectedRole, setSelectedRole] = useState('developer');
+
+  // Password Login States (Defaulted to Option 1: Developer)
+  const [email, setEmail] = useState('developer@surakshadrishti.in');
+  const [password, setPassword] = useState('Dev123');
 
   // OTP Login States
   const [identifier, setIdentifier] = useState('');
@@ -28,10 +35,6 @@ export function LoginPage({ onLoginSuccess }) {
   const [countdown, setCountdown] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
-
-  // Password Login States
-  const [email, setEmail] = useState('admin@surakshadrishti.in');
-  const [password, setPassword] = useState('Admin123');
 
   // Sign Up (New User) States
   const [regName, setRegName] = useState('');
@@ -102,6 +105,23 @@ export function LoginPage({ onLoginSuccess }) {
       }
     } catch (err) {
       setErrorMsg(err.message || 'Failed to verify code.');
+    }
+  };
+
+  // Instant 1-Click Login for Option 1 (Developer) and Option 2 (Admin)
+  const handleQuickLogin = async (role) => {
+    setErrorMsg('');
+    setSuccessMsg('');
+    const targetEmail = role === 'developer' ? 'developer@surakshadrishti.in' : 'admin@surakshadrishti.in';
+    const targetPass = role === 'developer' ? 'Dev123' : 'Admin123';
+    setSelectedRole(role);
+    setEmail(targetEmail);
+    setPassword(targetPass);
+    const res = await login(targetEmail, targetPass);
+    if (res.success) {
+      if (onLoginSuccess) onLoginSuccess();
+    } else {
+      setErrorMsg(res.message || 'Authentication error.');
     }
   };
 
@@ -301,46 +321,214 @@ export function LoginPage({ onLoginSuccess }) {
           {/* ========================================================
               VIEW 1: SIGN IN MODE (OTP OR PASSWORD)
              ======================================================== */}
+          {/* ========================================================
+              VIEW 1: SIGN IN MODE (TWO OPTIONS: 1. DEVELOPER, 2. ADMIN)
+             ======================================================== */}
           {authMode === 'signin' && (
             <div className="space-y-4">
-              {/* Method Switch: OTP vs Password */}
-              <div className="flex items-center gap-2 bg-slate-100 dark:bg-command-950/70 p-1 rounded-xl border border-slate-200 dark:border-blue-900/40 text-xs font-mono">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLoginMethod('otp');
-                    setErrorMsg('');
-                  }}
-                  className={`flex-1 py-2 rounded-lg font-extrabold transition flex items-center justify-center gap-1.5 ${
-                    loginMethod === 'otp'
-                      ? 'bg-white dark:bg-blue-950 text-blue-900 dark:text-cyberyellow-300 shadow-sm border border-slate-200 dark:border-blue-800'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                  }`}
-                >
-                  <Smartphone className="w-3.5 h-3.5 text-amber-500" />
-                  <span>OTP (Gmail / Phone)</span>
-                </button>
+              {/* TWO OPTIONS FOR LOGIN: 1. DEVELOPER, 2. ADMIN */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-mono font-black uppercase text-slate-800 dark:text-cyberyellow-300 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    SELECT LOGIN OPTION:
+                  </label>
+                  <span className="text-[10.5px] font-mono font-bold text-slate-500 dark:text-blue-300/80">
+                    2 PRIMARY OPTIONS
+                  </span>
+                </div>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLoginMethod('password');
-                    setErrorMsg('');
-                  }}
-                  className={`flex-1 py-2 rounded-lg font-extrabold transition flex items-center justify-center gap-1.5 ${
-                    loginMethod === 'password'
-                      ? 'bg-white dark:bg-blue-950 text-blue-900 dark:text-cyberyellow-300 shadow-sm border border-slate-200 dark:border-blue-800'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                  }`}
-                >
-                  <KeyRound className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Password Login</span>
-                </button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* OPTION 1: DEVELOPER */}
+                  <div
+                    onClick={() => {
+                      setSelectedRole('developer');
+                      setEmail('developer@surakshadrishti.in');
+                      setPassword('Dev123');
+                      setErrorMsg('');
+                    }}
+                    className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden ${
+                      selectedRole === 'developer'
+                        ? 'bg-cyan-500/10 dark:bg-cyan-950/60 border-cyan-500 dark:border-cyan-400 shadow-md ring-2 ring-cyan-400/20'
+                        : 'bg-white dark:bg-command-950/70 border-slate-200 dark:border-blue-900/60 hover:border-cyan-400/60 hover:bg-slate-50 dark:hover:bg-command-900/50'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2.5">
+                        <div className="p-2 rounded-xl bg-cyan-600 text-white shadow-sm flex-shrink-0">
+                          <Code2 className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="text-[9.5px] font-mono font-black px-1.5 py-0.5 rounded bg-cyan-100 text-cyan-900 dark:bg-cyan-900/80 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-700 uppercase">
+                            OPTION 1
+                          </span>
+                          <h3 className="text-sm font-black text-slate-900 dark:text-white font-heading mt-0.5">
+                            1. Developer
+                          </h3>
+                        </div>
+                      </div>
+                      {selectedRole === 'developer' && (
+                        <CheckCircle2 className="w-4 h-4 text-cyan-600 dark:text-cyan-400 flex-shrink-0" />
+                      )}
+                    </div>
+
+                    <div className="space-y-1 text-xs mb-3">
+                      <div className="font-extrabold text-slate-900 dark:text-white">Vivek Kumar</div>
+                      <div className="text-[11px] text-cyan-700 dark:text-cyan-300 font-mono font-bold">
+                        Chief AI Architect
+                      </div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono truncate">
+                        developer@surakshadrishti.in
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleQuickLogin('developer');
+                      }}
+                      disabled={loading}
+                      className="w-full py-1.5 px-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-mono font-black text-[11px] uppercase tracking-wider transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                    >
+                      <span>Instant Login</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  </div>
+
+                  {/* OPTION 2: ADMIN */}
+                  <div
+                    onClick={() => {
+                      setSelectedRole('admin');
+                      setEmail('admin@surakshadrishti.in');
+                      setPassword('Admin123');
+                      setErrorMsg('');
+                    }}
+                    className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden ${
+                      selectedRole === 'admin'
+                        ? 'bg-amber-500/10 dark:bg-amber-950/60 border-amber-500 dark:border-cyberyellow-400 shadow-md ring-2 ring-amber-400/20'
+                        : 'bg-white dark:bg-command-950/70 border-slate-200 dark:border-blue-900/60 hover:border-amber-400/60 hover:bg-slate-50 dark:hover:bg-command-900/50'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2.5">
+                        <div className="p-2 rounded-xl bg-amber-600 text-white shadow-sm flex-shrink-0">
+                          <ShieldAlert className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="text-[9.5px] font-mono font-black px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 dark:bg-amber-900/80 dark:text-cyberyellow-300 border border-amber-300 dark:border-amber-700 uppercase">
+                            OPTION 2
+                          </span>
+                          <h3 className="text-sm font-black text-slate-900 dark:text-white font-heading mt-0.5">
+                            2. Admin
+                          </h3>
+                        </div>
+                      </div>
+                      {selectedRole === 'admin' && (
+                        <CheckCircle2 className="w-4 h-4 text-amber-600 dark:text-cyberyellow-400 flex-shrink-0" />
+                      )}
+                    </div>
+
+                    <div className="space-y-1 text-xs mb-3">
+                      <div className="font-extrabold text-slate-900 dark:text-white">Dr. Rajesh Verma, IAS</div>
+                      <div className="text-[11px] text-amber-700 dark:text-cyberyellow-300 font-mono font-bold">
+                        NDMA Administrator
+                      </div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono truncate">
+                        admin@surakshadrishti.in
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleQuickLogin('admin');
+                      }}
+                      disabled={loading}
+                      className="w-full py-1.5 px-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-mono font-black text-[11px] uppercase tracking-wider transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                    >
+                      <span>Instant Login</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              {/* OTP Form Flow */}
-              {loginMethod === 'otp' && (
-                <div className="space-y-4">
+              {/* Password / Direct Credentials Form */}
+              {loginMethod === 'password' ? (
+                <form onSubmit={handlePasswordSubmit} className="space-y-3 text-xs pt-1">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-command-950/80 border border-slate-200 dark:border-blue-900/60 flex items-center justify-between text-[11px] font-mono">
+                    <span className="text-slate-500 dark:text-slate-400 font-bold uppercase">
+                      ACTIVE SELECTION:
+                    </span>
+                    <span className={`font-black uppercase ${selectedRole === 'developer' ? 'text-cyan-700 dark:text-cyan-400' : 'text-amber-700 dark:text-cyberyellow-400'}`}>
+                      {selectedRole === 'developer' ? '1. DEVELOPER (VIVEK KUMAR)' : '2. ADMIN (DR. RAJESH VERMA, IAS)'}
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-800 dark:text-cyberyellow-300 font-mono mb-1 font-bold uppercase">
+                      {selectedRole === 'developer' ? '1. DEVELOPER EMAIL / IDENTIFIER:' : '2. ADMIN EMAIL / IDENTIFIER:'}
+                    </label>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 text-blue-500 absolute left-3.5 top-2.5" />
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        className="w-full bg-white dark:bg-command-950/90 border border-slate-300 dark:border-blue-900/80 rounded-xl pl-10 pr-4 py-2 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-amber-500 dark:focus:border-cyberyellow-400 font-semibold transition"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-800 dark:text-cyberyellow-300 font-mono mb-1 font-bold uppercase">
+                      SECURITY PASSPHRASE:
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 text-blue-500 absolute left-3.5 top-2.5" />
+                      <input
+                        type="password"
+                        required
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        className="w-full bg-white dark:bg-command-950/90 border border-slate-300 dark:border-blue-900/80 rounded-xl pl-10 pr-4 py-2 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-amber-500 dark:focus:border-cyberyellow-400 font-semibold transition"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className={`w-full py-3 rounded-xl font-black tracking-wider uppercase transition shadow-lg flex items-center justify-center gap-2 text-xs cursor-pointer ${
+                      selectedRole === 'developer'
+                        ? 'bg-gradient-to-r from-cyan-600 via-blue-600 to-cyan-700 hover:from-cyan-500 hover:to-blue-500 text-white shadow-cyan-600/25'
+                        : 'bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-slate-950 shadow-amber-500/25'
+                    }`}
+                  >
+                    {loading ? 'Authenticating...' : selectedRole === 'developer' ? 'LOG IN AS 1. DEVELOPER (VIVEK KUMAR) →' : 'LOG IN AS 2. ADMIN (DR. RAJESH VERMA) →'}
+                  </button>
+
+                  <div className="pt-2 border-t border-slate-200 dark:border-blue-900/50 flex items-center justify-between text-[11px] font-mono">
+                    <span className="text-slate-500 dark:text-slate-400">Other Sign In Method:</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLoginMethod('otp');
+                        setErrorMsg('');
+                      }}
+                      className="text-blue-600 dark:text-cyberyellow-400 font-extrabold hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <Smartphone className="w-3.5 h-3.5" />
+                      <span>Sign in with Mobile / Gmail OTP →</span>
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                /* OTP Form Flow */
+                <div className="space-y-4 pt-1">
                   {!otpSent ? (
                     <form onSubmit={handleRequestOtp} className="space-y-4 text-xs">
                       <div>
@@ -474,53 +662,22 @@ export function LoginPage({ onLoginSuccess }) {
                       </button>
                     </form>
                   )}
+
+                  <div className="pt-2 border-t border-slate-200 dark:border-blue-900/50 flex items-center justify-between text-[11px] font-mono">
+                    <span className="text-slate-500 dark:text-slate-400">Return to standard login:</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLoginMethod('password');
+                        setErrorMsg('');
+                      }}
+                      className="text-blue-600 dark:text-cyberyellow-400 font-extrabold hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <KeyRound className="w-3.5 h-3.5" />
+                      <span>← Back to 1. Developer / 2. Admin Login</span>
+                    </button>
+                  </div>
                 </div>
-              )}
-
-              {/* Password Login Flow */}
-              {loginMethod === 'password' && (
-                <form onSubmit={handlePasswordSubmit} className="space-y-4 text-xs">
-                  <div>
-                    <label className="block text-slate-800 dark:text-cyberyellow-300 font-mono mb-1.5 font-bold uppercase">
-                      GOVERNMENT IDENTIFIER / EMAIL:
-                    </label>
-                    <div className="relative">
-                      <Mail className="w-4 h-4 text-blue-500 absolute left-3.5 top-3" />
-                      <input
-                        type="email"
-                        required
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        className="w-full bg-white dark:bg-command-950/90 border border-slate-300 dark:border-blue-900/80 rounded-xl pl-10 pr-4 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-amber-500 dark:focus:border-cyberyellow-400 font-semibold transition"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-slate-800 dark:text-cyberyellow-300 font-mono mb-1.5 font-bold uppercase">
-                      SECURITY PASSPHRASE:
-                    </label>
-                    <div className="relative">
-                      <Lock className="w-4 h-4 text-blue-500 absolute left-3.5 top-3" />
-                      <input
-                        type="password"
-                        required
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                        className="w-full bg-white dark:bg-command-950/90 border border-slate-300 dark:border-blue-900/80 rounded-xl pl-10 pr-4 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-amber-500 dark:focus:border-cyberyellow-400 font-semibold transition"
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black tracking-wider uppercase transition shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 text-xs cursor-pointer"
-                  >
-                    {loading ? 'Authenticating...' : 'Enter Command Center'}
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </form>
               )}
             </div>
           )}
