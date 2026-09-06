@@ -3,6 +3,7 @@ const db = require('./db');
 const { initSchema } = require('./schema');
 const { calculateRiskScore } = require('../services/riskEngine');
 const { evaluateCarryingCapacity } = require('../services/capacityEngine');
+const { seedGovtData } = require('./seedGovtData');
 
 function seedData(forceReset = false) {
   initSchema();
@@ -19,6 +20,9 @@ function seedData(forceReset = false) {
       DELETE FROM sqlite_sequence WHERE name IN ('relocation_allocations', 'field_reports', 'disaster_events', 'safe_zones', 'hazard_zones', 'habitations', 'users');
     `);
   }
+
+  // Always ensure government registries are seeded
+  seedGovtData();
 
   // Check if already seeded
   const userCount = db.prepare('SELECT count(*) as count FROM users').get().count;

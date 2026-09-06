@@ -164,6 +164,101 @@ function initSchema() {
       pinned INTEGER DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS rivers_and_dams (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      type TEXT NOT NULL CHECK(type IN ('River', 'Dam', 'Barrage')),
+      river_basin TEXT NOT NULL,
+      state TEXT NOT NULL,
+      district TEXT,
+      latitude REAL NOT NULL,
+      longitude REAL NOT NULL,
+      length_km REAL DEFAULT 0,
+      avg_depth_m REAL DEFAULT 0,
+      max_monsoon_depth_m REAL DEFAULT 0,
+      catchment_area_sqkm REAL DEFAULT 0,
+      danger_water_level_m REAL DEFAULT 0,
+      current_water_level_m REAL DEFAULT 0,
+      full_reservoir_level_m REAL DEFAULT 0,
+      maximum_water_level_m REAL DEFAULT 0,
+      live_storage_capacity_mcm REAL DEFAULT 0,
+      current_storage_pct REAL DEFAULT 0,
+      spillway_capacity_cusecs REAL DEFAULT 0,
+      cwc_monitoring_status TEXT DEFAULT 'Normal',
+      historical_breach_disasters TEXT,
+      downstream_hazard_level TEXT DEFAULT 'Medium',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS mining_sites (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      mine_name TEXT NOT NULL,
+      mineral_type TEXT NOT NULL,
+      operator_type TEXT NOT NULL CHECK(operator_type IN ('Government PSU', 'Private Lease', 'Joint Venture')),
+      operating_agency TEXT NOT NULL,
+      state TEXT NOT NULL,
+      district TEXT NOT NULL,
+      latitude REAL NOT NULL,
+      longitude REAL NOT NULL,
+      mining_method TEXT NOT NULL,
+      production_capacity_mtpa REAL DEFAULT 0,
+      lease_area_ha REAL DEFAULT 0,
+      tailings_pond_count INTEGER DEFAULT 1,
+      tailings_failure_risk TEXT DEFAULT 'Moderate',
+      ground_subsidence_risk TEXT DEFAULT 'Moderate',
+      blast_vibration_impact_radius_km REAL DEFAULT 2.5,
+      disaster_faced_by_locals TEXT,
+      underground_fire_status TEXT DEFAULT 'None',
+      nearby_habitations_at_risk INTEGER DEFAULT 0,
+      compliance_status TEXT DEFAULT 'DGMS Monitored',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS historical_disasters_20yr (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      event_title TEXT NOT NULL,
+      disaster_category TEXT NOT NULL,
+      primary_cause TEXT NOT NULL,
+      year INTEGER NOT NULL,
+      date_occurred TEXT,
+      state_country TEXT NOT NULL,
+      district_region TEXT NOT NULL,
+      latitude REAL NOT NULL,
+      longitude REAL NOT NULL,
+      casualties_count INTEGER DEFAULT 0,
+      displaced_population INTEGER DEFAULT 0,
+      economic_damage_inr_cr REAL DEFAULT 0,
+      area_impacted_sqkm REAL DEFAULT 0,
+      transboundary_linkage TEXT,
+      geotechnical_trigger TEXT,
+      official_ndma_report_ref TEXT,
+      summary_description TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS geological_soil_rock (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      region_name TEXT NOT NULL,
+      district TEXT NOT NULL,
+      state TEXT NOT NULL,
+      soil_major_type TEXT NOT NULL,
+      soil_sub_type TEXT,
+      soil_depth_class TEXT DEFAULT 'Deep',
+      permeability_rate TEXT DEFAULT 'Moderate',
+      internal_friction_angle_deg REAL DEFAULT 28,
+      cohesion_kpa REAL DEFAULT 15,
+      liquefaction_susceptibility TEXT DEFAULT 'Low',
+      rock_system TEXT NOT NULL,
+      lithology_description TEXT NOT NULL,
+      dominant_rock_types TEXT NOT NULL,
+      structural_faultlines TEXT,
+      seismic_zone TEXT DEFAULT 'Zone IV',
+      slope_stability_index REAL DEFAULT 65,
+      weathering_degree TEXT DEFAULT 'Moderate',
+      recommended_foundation_type TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // Safe column migrations for users table

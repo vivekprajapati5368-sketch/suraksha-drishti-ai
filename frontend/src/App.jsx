@@ -15,6 +15,7 @@ import { ReportsPage } from './pages/ReportsPage';
 import { AdminPage } from './pages/AdminPage';
 import { DiscussionPage } from './pages/DiscussionPage';
 import { LoginPage } from './pages/LoginPage';
+import { GovtDataExplorer } from './pages/GovtDataExplorer';
 import { LiveIndianSkyBackground } from './components/common/LiveIndianSkyBackground';
 
 function MainApp() {
@@ -49,6 +50,9 @@ function MainApp() {
     switch (currentPath) {
       case '/':
         return <Dashboard onNavigate={navigate} />;
+      case '/govt-data':
+      case '/predictor':
+        return <GovtDataExplorer onNavigate={navigate} />;
       case '/map':
         return <LiveRiskMap onNavigate={navigate} />;
       case '/habitations':

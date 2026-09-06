@@ -11,6 +11,7 @@ import {
   FileText,
   SlidersHorizontal,
   MessagesSquare,
+  Database,
   X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -22,6 +23,7 @@ export function Sidebar({ currentPath, onNavigate, mobileOpen, onCloseMobile }) 
 
   const navItems = [
     { id: 'dashboard', label: 'Executive Situation Room', icon: LayoutDashboard, path: '/' },
+    { id: 'govt-data', label: 'Govt Data & Safety Predictor', icon: Database, path: '/govt-data', badge: 'NEW' },
     { id: 'discussion', label: 'Crisis Council & Discussion', icon: MessagesSquare, path: '/discussion', badge: 'LIVE' },
     { id: 'map', label: 'Live Risk Map & GIS Layers', icon: MapPin, path: '/map' },
     { id: 'habitations', label: 'Vulnerable Habitations', icon: Home, path: '/habitations' },

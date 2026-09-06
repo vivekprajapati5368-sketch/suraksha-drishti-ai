@@ -121,4 +121,20 @@ router.post('/discussions/:id/reply', addReply);
 router.post('/discussions/:id/like', likeDiscussion);
 router.post('/discussions/:id/pin', togglePin);
 
+// Government Data Registries & Predictive Safety Routes
+const {
+  getRiversAndDams,
+  getMiningSites,
+  getDisasters20Yr,
+  getGeologySoils
+} = require('../controllers/governmentDataController');
+const { predictAreaSafety } = require('../controllers/predictionController');
+
+router.get('/govt/rivers-and-dams', getRiversAndDams);
+router.get('/govt/mining-sites', getMiningSites);
+router.get('/govt/disasters-20yr', getDisasters20Yr);
+router.get('/govt/geology-soils', getGeologySoils);
+router.post('/predict-safety', predictAreaSafety);
+
 module.exports = router;
+
