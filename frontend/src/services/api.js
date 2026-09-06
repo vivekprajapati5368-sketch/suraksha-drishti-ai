@@ -378,16 +378,36 @@ function getFallbackData(endpoint, method = 'GET', body = null) {
     };
   }
 
-  if (cleanEndpoint.startsWith('/auth/verify-otp') || cleanEndpoint.startsWith('/auth/send-otp') || cleanEndpoint.startsWith('/auth/me')) {
+  if (cleanEndpoint.startsWith('/auth/me')) {
+    try {
+      const saved = localStorage.getItem('suraksha_user');
+      if (saved) {
+        const u = JSON.parse(saved);
+        return { success: true, user: u };
+      }
+    } catch (e) {}
+    return {
+      success: true,
+      user: {
+        id: 10,
+        name: 'Guest Explorer',
+        email: 'guest@surakshadrishti.in',
+        role: 'guest',
+        department: 'Public Citizen & Disaster Awareness Visitor'
+      }
+    };
+  }
+
+  if (cleanEndpoint.startsWith('/auth/verify-otp') || cleanEndpoint.startsWith('/auth/send-otp')) {
     return {
       success: true,
       token: 'demo-pki-token-2026',
       user: {
-        id: 1,
-        name: 'Dr. Rajesh Verma, IAS',
-        email: 'admin@surakshadrishti.in',
-        role: 'admin',
-        department: 'National Disaster Management Authority (NDMA)'
+        id: 3,
+        name: 'New Registered User',
+        email: 'user@surakshadrishti.in',
+        role: 'new_user',
+        department: 'Civilian & Community Disaster Response'
       }
     };
   }

@@ -45,10 +45,21 @@ export function DiscussionPage({ onNavigate }) {
     priority: 'High',
     agency: user?.department || 'NDMA Taskforce',
     author_name: user?.name || 'Senior Responder',
-    author_role: user?.role === 'admin' ? 'Crisis Operations Director' : 'Field Operations Lead',
+    author_role: user?.role === 'admin' ? 'Administrator' : user?.role === 'developer' ? 'Lead AI Architect' : user?.role === 'guest' ? 'Guest Observer' : 'Citizen Observer',
     tags: ''
   });
   const [submittingPost, setSubmittingPost] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setNewPost(prev => ({
+        ...prev,
+        agency: user.department || 'NDMA Taskforce',
+        author_name: user.name || 'Authorized Responder',
+        author_role: user.role === 'admin' ? 'Administrator' : user.role === 'developer' ? 'Lead AI Architect' : user.role === 'guest' ? 'Guest Observer' : 'Citizen Observer'
+      }));
+    }
+  }, [user]);
 
   const channels = [
     { id: 'all', label: 'All Dispatches', icon: Radio, count: discussions.length },

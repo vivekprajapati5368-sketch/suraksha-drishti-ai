@@ -157,60 +157,90 @@ export function Navbar({ onOpenMobileMenu }) {
             </div>
           </button>
 
-          {/* Quick Role Switcher Dropdown */}
+          {/* Quick Role & Clearance Dropdown */}
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 border-2 border-slate-200 text-slate-900 dark:bg-blue-950/70 dark:hover:bg-blue-900/60 dark:border-blue-700/60 dark:text-white transition text-xs text-left shadow-sm"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 border-2 border-slate-200 text-slate-900 dark:bg-blue-950/70 dark:hover:bg-blue-900/60 dark:border-blue-700/60 dark:text-white transition text-xs text-left shadow-sm cursor-pointer"
             >
               <div className="w-2 h-2 rounded-full bg-amber-500 dark:bg-yellow-400 animate-pulse"></div>
               <div className="hidden sm:block">
                 <span className="text-[9px] uppercase tracking-wider text-slate-600 dark:text-blue-300/80 block font-mono font-extrabold">Clearance</span>
-                <span className="font-black text-slate-950 dark:text-blue-200 leading-none">{roleLabel[user?.role] || 'Officer'}</span>
+                <span className="font-black text-slate-950 dark:text-blue-200 leading-none">{roleLabel[user?.role] || 'Authorized'}</span>
               </div>
               <ChevronDown className="w-3.5 h-3.5 text-slate-600 dark:text-blue-400 ml-0.5" />
             </button>
 
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-command-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl py-2 z-50 text-xs backdrop-blur-xl">
-                <div className="px-3 py-2 border-b border-slate-200 dark:border-slate-800">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400">Switch Demo Role</p>
-                  <p className="text-[11px] text-slate-500">Quick role testing & clearance verification</p>
+              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-command-900 border border-slate-200 dark:border-blue-900/80 rounded-2xl shadow-2xl py-3 px-3.5 z-50 text-xs backdrop-blur-xl animate-in fade-in duration-150">
+                {/* Header: Authenticated Identity */}
+                <div className="pb-2.5 mb-2.5 border-b border-slate-200 dark:border-blue-900/60 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-mono font-black uppercase tracking-wider text-amber-700 dark:text-cyberyellow-400 block">
+                      AUTHENTICATED IDENTITY
+                    </span>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                      Active Authorized Session
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 font-mono text-[10px] font-bold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    ONLINE
+                  </div>
                 </div>
 
-                <div className="py-1">
-                  {Object.keys(DEMO_USERS).map(roleKey => {
-                    const u = DEMO_USERS[roleKey];
-                    const isSelected = user?.role === u.role;
-                    return (
-                      <button
-                        key={roleKey}
-                        onClick={() => {
-                          quickSwitch(roleKey);
-                          setDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-2.5 flex items-center justify-between transition hover:bg-slate-100 dark:hover:bg-slate-800/80 ${isSelected ? 'bg-blue-50 text-blue-900 font-bold dark:bg-blue-600/15 dark:text-blue-300' : 'text-slate-700 dark:text-slate-300'}`}
-                      >
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span>{roleLabel[u.role]}</span>
-                            <Badge variant={roleBadgeColor[u.role]} size="sm">{u.role}</Badge>
-                          </div>
-                          <p className="text-[10px] text-slate-500 mt-0.5">{u.name}</p>
-                        </div>
-                        {isSelected && <Check className="w-4 h-4 text-blue-600 dark:text-blue-400" />}
-                      </button>
-                    );
-                  })}
+                {/* ONLY Logged-in Person Data */}
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-command-950/80 border border-slate-200 dark:border-blue-900/60 space-y-2">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-600 text-slate-950 font-black text-sm flex items-center justify-center flex-shrink-0 shadow-md">
+                      {user?.name?.charAt(0) || 'U'}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-extrabold text-slate-950 dark:text-white text-xs block truncate">
+                          {user?.name || 'Authorized User'}
+                        </span>
+                        <Badge variant={roleBadgeColor[user?.role] || 'info'} size="sm">
+                          {user?.role}
+                        </Badge>
+                      </div>
+                      <span className="text-[11px] font-semibold text-amber-700 dark:text-cyberyellow-300 block truncate mt-0.5">
+                        {roleLabel[user?.role] || 'Authorized User'}
+                      </span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
+                        {user?.department || 'National Command'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-200 dark:border-blue-900/40 text-[10.5px] font-mono space-y-1 text-slate-600 dark:text-blue-200/80">
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-500">EMAIL:</span>
+                      <span className="font-bold text-slate-900 dark:text-white truncate max-w-[170px]">{user?.email || 'N/A'}</span>
+                    </div>
+                    {user?.phone && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500">PHONE:</span>
+                        <span className="font-bold text-slate-900 dark:text-white">{user.phone}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-500">CLEARANCE:</span>
+                      <span className="font-extrabold text-amber-700 dark:text-cyberyellow-400 uppercase">
+                        {user?.role === 'admin' ? 'LEVEL-5 EXECUTIVE (NDMA)' : user?.role === 'developer' ? 'LEVEL-4 AI ARCHITECT (ROOT)' : user?.role === 'guest' ? 'LEVEL-1 VISITOR (READ-ONLY)' : 'LEVEL-2 CITIZEN OBSERVER'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="pt-2 border-t border-slate-200 dark:border-slate-800 px-2 space-y-1">
+                {/* Actions */}
+                <div className="pt-2.5 mt-2.5 border-t border-slate-200 dark:border-blue-900/60 space-y-1">
                   <button
                     onClick={() => {
                       setProfileModalOpen(true);
                       setDropdownOpen(false);
                     }}
-                    className="w-full px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-2 font-medium"
+                    className="w-full px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-blue-950/60 transition flex items-center gap-2 font-bold text-xs cursor-pointer"
                   >
                     <User className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                     Manage Saved Profile
@@ -221,10 +251,10 @@ export function Navbar({ onOpenMobileMenu }) {
                       logout();
                       setDropdownOpen(false);
                     }}
-                    className="w-full px-3 py-2 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition flex items-center gap-2 font-medium"
+                    className="w-full px-3 py-2 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition flex items-center gap-2 font-bold text-xs cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
-                    Sign Out
+                    Sign Out / Switch Account
                   </button>
                 </div>
               </div>
@@ -246,7 +276,7 @@ export function Navbar({ onOpenMobileMenu }) {
                   </span>
                 </div>
                 <h3 className="text-xl font-black text-slate-900 dark:text-white font-heading tracking-tight">
-                  Officer & Authority Profile
+                  {user?.name || 'Authorized Personnel'} Profile
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-blue-200/80">
                   Your identity details are permanently synchronized with the backend database.
@@ -270,7 +300,7 @@ export function Navbar({ onOpenMobileMenu }) {
 
             <form onSubmit={handleSaveProfile} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-700 dark:text-yellow-300/90 font-mono mb-1 font-bold">OFFICER FULL NAME:</label>
+                <label className="block text-slate-700 dark:text-yellow-300/90 font-mono mb-1 font-bold">FULL NAME:</label>
                 <div className="relative">
                   <User className="w-4 h-4 text-blue-500 dark:text-blue-400 absolute left-3 top-2.5" />
                   <input

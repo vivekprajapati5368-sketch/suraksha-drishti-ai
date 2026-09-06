@@ -91,6 +91,7 @@ export function AuthProvider({ children }) {
     setUser(guestUser);
     setToken('guest-demo-token');
     localStorage.setItem('suraksha_token', 'guest-demo-token');
+    localStorage.setItem('suraksha_user', JSON.stringify(guestUser));
     localStorage.removeItem('suraksha_logged_out');
     return { success: true, user: guestUser };
   };
@@ -110,6 +111,7 @@ export function AuthProvider({ children }) {
         setUser(res.user);
         setToken(res.token);
         localStorage.setItem('suraksha_token', res.token);
+        localStorage.setItem('suraksha_user', JSON.stringify(res.user));
         localStorage.removeItem('suraksha_logged_out');
         return { success: true };
       }
@@ -122,6 +124,7 @@ export function AuthProvider({ children }) {
         setUser(u);
         setToken('demo-token');
         localStorage.setItem('suraksha_token', 'demo-token');
+        localStorage.setItem('suraksha_user', JSON.stringify(u));
         localStorage.removeItem('suraksha_logged_out');
         return { success: true };
       }
@@ -166,6 +169,7 @@ export function AuthProvider({ children }) {
         setUser(res.user);
         setToken(res.token);
         localStorage.setItem('suraksha_token', res.token);
+        localStorage.setItem('suraksha_user', JSON.stringify(res.user));
         localStorage.removeItem('suraksha_logged_out');
         return { success: true, message: res.message };
       }
@@ -184,6 +188,7 @@ export function AuthProvider({ children }) {
       setUser(u);
       setToken('demo-otp-token');
       localStorage.setItem('suraksha_token', 'demo-otp-token');
+      localStorage.setItem('suraksha_user', JSON.stringify(u));
       localStorage.removeItem('suraksha_logged_out');
       return { success: true, message: 'OTP verified successfully' };
     } finally {
@@ -197,12 +202,17 @@ export function AuthProvider({ children }) {
       const res = await api.updateProfile(profileData);
       if (res.success && res.user) {
         setUser(res.user);
+        localStorage.setItem('suraksha_user', JSON.stringify(res.user));
         return { success: true, message: res.message };
       }
       return { success: false, message: 'Failed to save profile' };
     } catch (err) {
       // Local fallback
-      setUser(prev => ({ ...prev, ...profileData }));
+      setUser(prev => {
+        const updated = { ...prev, ...profileData };
+        localStorage.setItem('suraksha_user', JSON.stringify(updated));
+        return updated;
+      });
       return { success: true, message: 'Profile saved locally' };
     }
   };
@@ -218,6 +228,7 @@ export function AuthProvider({ children }) {
           setToken(res.token);
           localStorage.setItem('suraksha_token', res.token);
         }
+        localStorage.setItem('suraksha_user', JSON.stringify(res.user));
         localStorage.removeItem('suraksha_logged_out');
         return { success: true, message: res.message || 'Account registered successfully!' };
       }
@@ -236,6 +247,7 @@ export function AuthProvider({ children }) {
       setUser(newUser);
       setToken('demo-new-user-token');
       localStorage.setItem('suraksha_token', 'demo-new-user-token');
+      localStorage.setItem('suraksha_user', JSON.stringify(newUser));
       localStorage.removeItem('suraksha_logged_out');
       return { success: true, message: 'Account registered and logged in successfully!' };
     } finally {
