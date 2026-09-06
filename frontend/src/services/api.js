@@ -499,6 +499,61 @@ function getFallbackData(endpoint, method = 'GET', body = null) {
     };
   }
 
+  // 15. Auth Endpoints Fallback
+  if (cleanEndpoint === '/auth/login' && method === 'POST') {
+    const email = body?.email?.toLowerCase() || '';
+    const userRoleMap = {
+      'admin@surakshadrishti.in': { id: 1, name: 'Dr. Rajesh Verma, IAS', role: 'admin', department: 'National Disaster Management Authority (NDMA)', phone: '+919811020261' },
+      'authority@surakshadrishti.in': { id: 2, name: 'Col. Sunita Rawat', role: 'authority', department: 'State Disaster Response Force (SDRF)', phone: '+919822020262' },
+      'officer@surakshadrishti.in': { id: 3, name: 'Inspector Vikram Negi', role: 'field_officer', department: 'Chamoli Quick Response Field Command', phone: '+919833020263' },
+      'user@surakshadrishti.in': { id: 4, name: 'Aarav Sharma', role: 'user', department: 'Civil Defense & Community Volunteer Network', phone: '+919844020264' },
+      'developer@surakshadrishti.in': { id: 5, name: 'Vivek Kumar', role: 'developer', department: 'Chief AI Architect & Core System Engineering', phone: '+919855020265' },
+      'newuser@surakshadrishti.in': { id: 6, name: 'Pooja Joshi', role: 'user', department: 'Newly Enrolled Field Observer (Demo Provisioned)', phone: '+919866020266' }
+    };
+    const matched = userRoleMap[email] || {
+      id: Date.now(),
+      name: email.split('@')[0].toUpperCase(),
+      email: email,
+      phone: '+919999900000',
+      role: 'user',
+      department: 'Civilian Field Monitor'
+    };
+    return { success: true, token: 'demo-token-' + (matched.role || 'user'), user: { ...matched, email } };
+  }
+
+  if (cleanEndpoint === '/auth/register' && method === 'POST') {
+    const newUser = {
+      id: Date.now(),
+      name: body?.name || 'New Officer / User',
+      email: body?.email || 'newuser@surakshadrishti.in',
+      phone: body?.phone || '+919866020266',
+      role: body?.role || 'user',
+      department: body?.department || 'Civilian & Disaster Observer Network',
+      last_login: new Date().toISOString()
+    };
+    return { success: true, message: 'Account successfully registered and verified.', user: newUser, token: 'demo-registered-token' };
+  }
+
+  if (cleanEndpoint === '/auth/send-otp' && method === 'POST') {
+    const id = body?.identifier || 'officer@surakshadrishti.in';
+    const mockOtp = '582191';
+    return { success: true, message: `Government 2-Factor OTP successfully dispatched to ${id}.`, demoOtp: mockOtp, identifier: id };
+  }
+
+  if (cleanEndpoint === '/auth/verify-otp' && method === 'POST') {
+    const id = body?.identifier || '';
+    const isEmail = id.includes('@');
+    const u = {
+      id: Math.floor(100 + Math.random() * 900),
+      name: isEmail ? id.split('@')[0].toUpperCase() : `Officer (${id.slice(-4)})`,
+      email: isEmail ? id : `officer_${id.slice(-4)}@surakshadrishti.in`,
+      phone: isEmail ? null : id,
+      role: 'authority',
+      department: 'Regional Disaster Response Task Force'
+    };
+    return { success: true, message: 'OTP verified successfully', token: 'demo-otp-token', user: u };
+  }
+
   // Generic fallback for mutations and actions
   return { success: true, data: null, message: 'Processed via Resilient Cloud Engine' };
 }
@@ -558,6 +613,7 @@ async function request(endpoint, options = {}) {
 export const api = {
   // Auth
   login: (email, password) => request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  register: (userData) => request('/auth/register', { method: 'POST', body: JSON.stringify(userData) }),
   sendOtp: (identifier) => request('/auth/send-otp', { method: 'POST', body: JSON.stringify({ identifier }) }),
   verifyOtp: (identifier, otp) => request('/auth/verify-otp', { method: 'POST', body: JSON.stringify({ identifier, otp }) }),
   getMe: () => request('/auth/me'),

@@ -62,13 +62,19 @@ export function Navbar({ onOpenMobileMenu }) {
   const roleLabel = {
     admin: 'Administrator',
     authority: 'Disaster Authority',
-    field_officer: 'Field Officer'
+    field_officer: 'Field Officer',
+    user: 'Civilian User',
+    developer: 'Lead AI Architect',
+    new_user: 'New Registered User'
   };
 
   const roleBadgeColor = {
     admin: 'critical',
     authority: 'info',
-    field_officer: 'medium'
+    field_officer: 'medium',
+    user: 'low',
+    developer: 'high',
+    new_user: 'low'
   };
 
   return (

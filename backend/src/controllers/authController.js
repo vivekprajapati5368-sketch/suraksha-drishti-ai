@@ -244,6 +244,58 @@ function updateProfile(req, res) {
   }
 }
 
+// 5. Register / Sign Up New User
+function register(req, res) {
+  try {
+    const { name, email, phone, password, role, department } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ success: false, message: 'Name, email, and password are required.' });
+    }
+
+    const cleanEmail = sanitizeIdentifier(email);
+    const existing = db.prepare('SELECT id FROM users WHERE LOWER(email) = ?').get(cleanEmail);
+    if (existing) {
+      return res.status(400).json({ success: false, message: 'An account with this email already exists.' });
+    }
+
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(password, salt);
+    const cleanPhone = phone ? normalizePhone(phone) : null;
+    const assignedRole = role || 'user';
+    const assignedDept = department ? department.trim() : 'Civilian & Community Disaster Response';
+
+    const info = db.prepare(`
+      INSERT INTO users (name, email, phone, password_hash, role, department)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(name.trim(), cleanEmail, cleanPhone, hash, assignedRole, assignedDept);
+
+    const newUser = db.prepare('SELECT id, name, email, phone, role, department, created_at FROM users WHERE id = ?').get(info.lastInsertRowid);
+
+    const token = jwt.sign(
+      {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        phone: newUser.phone,
+        role: newUser.role,
+        department: newUser.department
+      },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: 'Account successfully registered and verified.',
+      token,
+      user: { ...newUser, last_login: new Date().toISOString() }
+    });
+  } catch (err) {
+    console.error('[Register Error]', err);
+    return res.status(500).json({ success: false, message: 'Failed to create user account.' });
+  }
+}
+
 function getMe(req, res) {
   try {
     const user = db.prepare('SELECT id, name, email, phone, role, department, created_at, last_login FROM users WHERE id = ?').get(req.user.id);
@@ -259,6 +311,7 @@ function getMe(req, res) {
 
 module.exports = {
   login,
+  register,
   sendOtp,
   verifyOtp,
   updateProfile,

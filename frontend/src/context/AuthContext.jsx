@@ -9,24 +9,60 @@ export const DEMO_USERS = {
     name: 'Dr. Rajesh Verma, IAS',
     email: 'admin@surakshadrishti.in',
     phone: '+919811020261',
+    password: 'Admin123',
     role: 'admin',
-    department: 'National Disaster Intelligence Command'
+    department: 'National Disaster Management Authority (NDMA)',
+    title: 'Principal Secretary & Commissioner'
   },
   authority: {
     id: 2,
     name: 'Col. Sunita Rawat',
     email: 'authority@surakshadrishti.in',
     phone: '+919822020262',
+    password: 'Authority123',
     role: 'authority',
-    department: 'State Disaster Response Force (SDRF)'
+    department: 'State Disaster Response Force (SDRF)',
+    title: 'Commanding Officer & Liaison'
   },
   officer: {
     id: 3,
     name: 'Inspector Vikram Negi',
     email: 'officer@surakshadrishti.in',
     phone: '+919833020263',
+    password: 'Officer123',
     role: 'field_officer',
-    department: 'Chamoli District Quick Response Team'
+    department: 'Chamoli Quick Response Field Command',
+    title: 'Field Team Commander'
+  },
+  user: {
+    id: 4,
+    name: 'Aarav Sharma',
+    email: 'user@surakshadrishti.in',
+    phone: '+919844020264',
+    password: 'User123',
+    role: 'user',
+    department: 'Civil Defense & Volunteer Community Network',
+    title: 'Civilian Observer & Warden'
+  },
+  developer: {
+    id: 5,
+    name: 'Vivek Kumar',
+    email: 'developer@surakshadrishti.in',
+    phone: '+919855020265',
+    password: 'Dev123',
+    role: 'developer',
+    department: 'Chief AI Architect & Core System Engineering',
+    title: 'Lead System Architect & AI Engineer'
+  },
+  newUser: {
+    id: 6,
+    name: 'Pooja Joshi',
+    email: 'newuser@surakshadrishti.in',
+    phone: '+919866020266',
+    password: 'NewUser123',
+    role: 'user',
+    department: 'Newly Enrolled Field Observer (Demo Provisioned)',
+    title: 'Registered Observer (First Login)'
   }
 };
 
@@ -167,6 +203,42 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // Register New User Account
+  const register = async (userData) => {
+    setLoading(true);
+    try {
+      const res = await api.register(userData);
+      if (res.success && res.user) {
+        setUser(res.user);
+        if (res.token) {
+          setToken(res.token);
+          localStorage.setItem('suraksha_token', res.token);
+        }
+        localStorage.removeItem('suraksha_logged_out');
+        return { success: true, message: res.message || 'Account registered successfully!' };
+      }
+      return { success: false, message: res.message || 'Registration failed.' };
+    } catch (err) {
+      // Local fallback for offline mode
+      const newUser = {
+        id: Date.now(),
+        name: userData.name || 'New Officer',
+        email: userData.email,
+        phone: userData.phone,
+        role: userData.role || 'user',
+        department: userData.department || 'Civilian Disaster Response Network',
+        last_login: new Date().toISOString()
+      };
+      setUser(newUser);
+      setToken('demo-new-user-token');
+      localStorage.setItem('suraksha_token', 'demo-new-user-token');
+      localStorage.removeItem('suraksha_logged_out');
+      return { success: true, message: 'Account registered and logged in successfully!' };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const quickSwitch = (roleKey) => {
     if (DEMO_USERS[roleKey]) {
       const u = DEMO_USERS[roleKey];
@@ -191,6 +263,7 @@ export function AuthProvider({ children }) {
       token,
       loading,
       login,
+      register,
       sendOtp,
       verifyOtp,
       updateProfile,

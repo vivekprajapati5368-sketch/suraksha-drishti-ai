@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { login, sendOtp, verifyOtp, updateProfile, getMe } = require('../controllers/authController');
+const { login, register, sendOtp, verifyOtp, updateProfile, getMe } = require('../controllers/authController');
 const { getDashboardStats } = require('../controllers/dashboardController');
 const {
   getAllHabitations,
@@ -59,6 +59,7 @@ const { authenticateToken, requireRole } = require('../middleware/auth');
 
 // Auth routes
 router.post('/auth/login', login);
+router.post('/auth/register', register);
 router.post('/auth/send-otp', sendOtp);
 router.post('/auth/verify-otp', verifyOtp);
 router.get('/auth/me', authenticateToken, getMe);
