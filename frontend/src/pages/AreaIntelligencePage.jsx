@@ -480,24 +480,31 @@ export function AreaIntelligencePage({ onNavigate }) {
       {/* Main 360° Dossier & Tabbed Investigation */}
       {report && (
         <div className="bg-white dark:bg-command-900/95 border border-slate-200/90 dark:border-blue-900/60 rounded-3xl shadow-xl overflow-hidden mt-4">
-          {/* Executive Verdict Top Banner - Golden Yellow Command Theme */}
-          <div className="p-5 border-b-2 border-yellow-500/60 dark:border-yellow-400/70 bg-gradient-to-r from-amber-500/15 via-yellow-500/20 to-amber-500/10 dark:from-[#2a1d04]/90 dark:via-[#1f1503]/80 dark:to-command-900 shadow-sm relative overflow-hidden">
-            <div className="absolute -top-10 -left-10 w-36 h-36 bg-yellow-400/20 rounded-full blur-3xl pointer-events-none"></div>
+          {/* Executive Verdict Top Banner - Royal Cyber Purple & Gold Telemetry Aesthetic */}
+          <div className="p-5 border-b-2 border-purple-500/80 dark:border-purple-400 bg-gradient-to-r from-purple-900/20 via-indigo-950/25 to-purple-900/20 dark:from-[#1b0833] dark:via-[#130526] dark:to-command-900 shadow-md relative overflow-hidden ring-1 ring-purple-500/20">
+            <div className="absolute -top-10 -left-10 w-36 h-36 bg-purple-600/25 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -bottom-10 -right-10 w-36 h-36 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-500 dark:bg-yellow-400 animate-ping"></span>
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-mono bg-yellow-500/20 dark:bg-yellow-400/20 text-amber-900 dark:text-yellow-300 border border-yellow-400/50">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-purple-500"></span>
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-mono bg-purple-500/20 text-purple-900 dark:text-purple-300 border border-purple-400/40">
                     {report.overallVerdict?.badge || 'OFFICIAL VERDICT'}
                   </span>
-                  <span className="text-xs font-mono font-bold text-amber-800 dark:text-yellow-200">
+                  <span className="text-xs font-mono font-bold text-purple-800 dark:text-yellow-200">
                     Target: {report.location?.name || locationName} ({report.location?.district}, {report.location?.state})
                   </span>
                 </div>
-                <h3 className="text-base sm:text-lg font-black tracking-tight text-slate-950 dark:text-yellow-300 font-heading">
-                  {report.overallVerdict?.title || 'Comprehensive Multi-Hazard Spatial Evaluation'}
+                <h3 className="text-base sm:text-lg font-black tracking-tight text-slate-950 dark:text-white font-heading">
+                  <span className="bg-gradient-to-r from-purple-950 via-purple-800 to-indigo-950 dark:from-white dark:via-purple-100 dark:to-yellow-300 bg-clip-text text-transparent">
+                    {report.overallVerdict?.title || 'Comprehensive Multi-Hazard Spatial Evaluation'}
+                  </span>
                 </h3>
-                <p className="text-xs text-slate-700 dark:text-yellow-100/90 max-w-4xl font-medium">
+                <p className="text-xs text-slate-700 dark:text-purple-200/90 max-w-4xl font-medium">
                   {report.overallVerdict?.summary || 'Autonomous risk profiling complete. All telemetry corroborated with CPCB, GSI, and NDMA ground registers.'}
                 </p>
               </div>
