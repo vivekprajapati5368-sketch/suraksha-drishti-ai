@@ -12,6 +12,8 @@ import {
   SlidersHorizontal,
   MessagesSquare,
   Database,
+  Activity,
+  Radio,
   X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -23,6 +25,8 @@ export function Sidebar({ currentPath, onNavigate, mobileOpen, onCloseMobile }) 
 
   const navItems = [
     { id: 'dashboard', label: 'Executive Situation Room', icon: LayoutDashboard, path: '/' },
+    { id: 'area-intelligence', label: '360° Area Intelligence', icon: Activity, path: '/area-intelligence', badge: '360°' },
+    { id: 'emergency-alerts', label: 'SOS Alert System', icon: Radio, path: '/emergency-alerts', badge: 'SOS' },
     { id: 'govt-data', label: 'Govt Data & Safety Predictor', icon: Database, path: '/govt-data', badge: 'NEW' },
     { id: 'discussion', label: 'Crisis Council & Discussion', icon: MessagesSquare, path: '/discussion', badge: 'LIVE' },
     { id: 'map', label: 'Live Risk Map & GIS Layers', icon: MapPin, path: '/map' },
@@ -88,7 +92,11 @@ export function Sidebar({ currentPath, onNavigate, mobileOpen, onCloseMobile }) 
               </div>
               {item.badge && (
                 <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full border flex-shrink-0 ${
-                  item.badge === 'LIVE'
+                  item.badge === 'SOS'
+                    ? 'bg-red-100 text-red-900 border-red-300 dark:bg-red-950/80 dark:text-red-300 dark:border-red-600/70 shadow-sm shadow-red-500/30 animate-pulse'
+                    : item.badge === '360°'
+                    ? 'bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-600/70 shadow-sm shadow-cyan-500/20'
+                    : item.badge === 'LIVE'
                     ? 'bg-purple-100 text-purple-900 border-purple-300 dark:bg-purple-900/70 dark:text-purple-300 dark:border-purple-500/60 shadow-sm shadow-purple-500/20'
                     : 'bg-amber-100 text-amber-900 border-amber-300 dark:bg-yellow-400/20 dark:text-yellow-300 dark:border-yellow-400/40'
                 }`}>

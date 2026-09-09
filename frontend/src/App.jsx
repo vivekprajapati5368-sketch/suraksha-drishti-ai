@@ -16,6 +16,8 @@ import { AdminPage } from './pages/AdminPage';
 import { DiscussionPage } from './pages/DiscussionPage';
 import { LoginPage } from './pages/LoginPage';
 import { GovtDataExplorer } from './pages/GovtDataExplorer';
+import { AreaIntelligencePage } from './pages/AreaIntelligencePage';
+import { EmergencyAlertsPage } from './pages/EmergencyAlertsPage';
 import { LiveIndianSkyBackground } from './components/common/LiveIndianSkyBackground';
 
 function MainApp() {
@@ -50,6 +52,10 @@ function MainApp() {
     switch (currentPath) {
       case '/':
         return <Dashboard onNavigate={navigate} />;
+      case '/area-intelligence':
+        return <AreaIntelligencePage onNavigate={navigate} />;
+      case '/emergency-alerts':
+        return <EmergencyAlertsPage onNavigate={navigate} />;
       case '/govt-data':
       case '/predictor':
         return <GovtDataExplorer onNavigate={navigate} />;

@@ -137,5 +137,38 @@ router.get('/govt/disasters-20yr', getDisasters20Yr);
 router.get('/govt/geology-soils', getGeologySoils);
 router.post('/predict-safety', predictAreaSafety);
 
+// 360° Area Intelligence Routes
+const {
+  runAreaAnalysis,
+  getMiningNearby,
+  getGeologyByCoords,
+  getDisasterHistory50Yr,
+  getRiversNearby,
+  getWaterQuality,
+  getProjectsNearby,
+  getAreaAnalysesHistory
+} = require('../controllers/areaIntelligenceController');
+
+router.post('/area-analysis', runAreaAnalysis);
+router.get('/area-analysis', getAreaAnalysesHistory);
+router.get('/mining/nearby', getMiningNearby);
+router.get('/geology', getGeologyByCoords);
+router.get('/disasters/history', getDisasterHistory50Yr);
+router.get('/rivers/nearby', getRiversNearby);
+router.get('/water-quality', getWaterQuality);
+router.get('/projects/nearby', getProjectsNearby);
+
+// SOS & Emergency Alert System Routes
+const {
+  createEmergencyAlert,
+  getEmergencyAlerts,
+  getAlertDetails
+} = require('../controllers/emergencyAlertController');
+
+router.post('/emergency-alert', createEmergencyAlert);
+router.get('/emergency-alerts', getEmergencyAlerts);
+router.get('/emergency-alerts/:id', getAlertDetails);
+
 module.exports = router;
+
 

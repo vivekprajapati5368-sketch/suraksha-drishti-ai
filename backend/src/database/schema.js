@@ -259,6 +259,149 @@ function initSchema() {
       recommended_foundation_type TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS area_analyses (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      latitude REAL NOT NULL,
+      longitude REAL NOT NULL,
+      radius_km REAL NOT NULL DEFAULT 10.0,
+      location_name TEXT,
+      district TEXT,
+      state TEXT,
+      overall_risk_score REAL,
+      safety_classification TEXT,
+      detailed_report_json TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS geological_surveys (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      location TEXT NOT NULL,
+      district TEXT,
+      state TEXT,
+      latitude REAL,
+      longitude REAL,
+      soil_type TEXT NOT NULL,
+      soil_texture TEXT,
+      soil_moisture TEXT,
+      erosion_susceptibility TEXT,
+      water_retention TEXT,
+      rock_type TEXT NOT NULL,
+      geological_formation TEXT,
+      rock_stability TEXT,
+      weathering_characteristics TEXT,
+      fracture_fault_indicators TEXT,
+      geological_stability_score REAL DEFAULT 70,
+      source TEXT DEFAULT 'Geological Survey of India (GSI)',
+      source_url TEXT,
+      report_date TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS historical_disasters_50yr (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      disaster_type TEXT NOT NULL,
+      year_date TEXT NOT NULL,
+      location TEXT NOT NULL,
+      district TEXT,
+      state TEXT,
+      latitude REAL,
+      longitude REAL,
+      severity TEXT NOT NULL,
+      affected_population INTEGER DEFAULT 0,
+      casualties INTEGER DEFAULT 0,
+      official_reported_cause TEXT NOT NULL,
+      government_response TEXT,
+      source_organization TEXT NOT NULL,
+      source_document_url TEXT,
+      publication_date TEXT,
+      verification_level INTEGER DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS rivers_detailed (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      river_type TEXT NOT NULL DEFAULT 'Major River',
+      basin TEXT NOT NULL,
+      width_approx_m REAL DEFAULT 150,
+      length_km REAL DEFAULT 0,
+      floodplain_info TEXT,
+      flood_risk_indicators TEXT DEFAULT 'Medium',
+      latitude REAL NOT NULL,
+      longitude REAL NOT NULL,
+      source TEXT DEFAULT 'Central Water Commission (CWC)',
+      source_url TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS water_quality_records (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      river_name TEXT NOT NULL,
+      monitoring_station TEXT NOT NULL,
+      station_code TEXT,
+      latitude REAL,
+      longitude REAL,
+      measurement_date TEXT,
+      water_quality_index REAL DEFAULT 72,
+      water_quality_score REAL DEFAULT 72,
+      ph REAL DEFAULT 7.4,
+      dissolved_oxygen_mg_l REAL DEFAULT 6.8,
+      bod_mg_l REAL DEFAULT 2.2,
+      cod_mg_l REAL DEFAULT 12.0,
+      pollution_status TEXT DEFAULT 'Acceptable',
+      source TEXT DEFAULT 'Central Pollution Control Board (CPCB)',
+      source_url TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS development_projects (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      project_type TEXT NOT NULL,
+      ownership_type TEXT NOT NULL CHECK(ownership_type IN ('Government Project', 'Private Project', 'Public-Private Partnership')),
+      organization TEXT NOT NULL,
+      location TEXT NOT NULL,
+      district TEXT,
+      state TEXT,
+      latitude REAL NOT NULL,
+      longitude REAL NOT NULL,
+      project_status TEXT DEFAULT 'Under Construction',
+      start_date TEXT,
+      expected_completion TEXT,
+      environmental_clearance_ref TEXT,
+      disaster_considerations TEXT,
+      source TEXT DEFAULT 'Ministry of Environment, Forest & Climate Change (MoEFCC)',
+      source_url TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS emergency_alerts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      alert_type TEXT NOT NULL,
+      severity TEXT NOT NULL,
+      location_name TEXT NOT NULL,
+      latitude REAL NOT NULL,
+      longitude REAL NOT NULL,
+      affected_radius_km REAL DEFAULT 10.0,
+      nearest_safe_zone_name TEXT,
+      recommended_actions TEXT,
+      status TEXT DEFAULT 'Active',
+      is_test INTEGER DEFAULT 1,
+      created_by TEXT DEFAULT 'Emergency Operations Command',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS alert_recipients (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      alert_id INTEGER NOT NULL,
+      user_name TEXT NOT NULL,
+      contact TEXT NOT NULL,
+      notification_type TEXT NOT NULL,
+      delivery_status TEXT NOT NULL DEFAULT 'Delivered',
+      delivered_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      error_message TEXT
+    );
   `);
 
   // Safe column migrations for users table

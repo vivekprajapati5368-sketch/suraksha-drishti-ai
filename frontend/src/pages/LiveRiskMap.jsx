@@ -4,7 +4,7 @@ import { HabitationDetailDrawer } from '../components/habitations/HabitationDeta
 import { api } from '../services/api';
 import { Badge } from '../components/common/Badge';
 import { DynamicMouseText } from '../components/common/DynamicMouseText';
-import { MapPin, Shield, Flame, Search, Navigation, Layers, Compass, AlertTriangle } from 'lucide-react';
+import { MapPin, Shield, Flame, Search, Navigation, Layers, Compass, AlertTriangle, Activity } from 'lucide-react';
 
 export function LiveRiskMap({ onNavigate }) {
   const [hazardZones, setHazardZones] = useState([]);
@@ -68,26 +68,38 @@ export function LiveRiskMap({ onNavigate }) {
           </p>
         </div>
 
-        {/* Search & Fast Jump */}
-        <form onSubmit={handleSearch} className="flex items-center gap-2">
-          <div className="relative">
-            <Search className="w-4 h-4 text-blue-500 dark:text-blue-400 absolute left-3.5 top-3" />
-            <input
-              type="text"
-              placeholder="Search Joshimath, Wayanad, Majuli..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-white dark:bg-command-950/90 border border-slate-200 dark:border-blue-900/60 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-blue-300/40 text-xs rounded-xl pl-10 pr-4 py-2.5 w-64 focus:outline-none focus:border-amber-500 dark:focus:border-yellow-400 font-semibold transition-colors"
-            />
-          </div>
+        {/* Actions & Search */}
+        <div className="flex flex-wrap items-center gap-2">
           <button
-            type="submit"
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 text-xs font-black uppercase tracking-wider shadow-md shadow-amber-500/20 transition flex items-center gap-1.5 hover:from-amber-300 hover:to-yellow-400"
+            type="button"
+            onClick={() => onNavigate && onNavigate('/area-intelligence')}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white text-xs font-black uppercase tracking-wider shadow-md shadow-cyan-500/25 transition flex items-center gap-1.5 cursor-pointer"
+            title="Launch 360° Deep Area Intelligence Scan"
           >
-            <Navigation className="w-3.5 h-3.5" />
-            Locate
+            <Activity className="w-3.5 h-3.5 animate-pulse" />
+            # ANALYZE THIS AREA
           </button>
-        </form>
+
+          <form onSubmit={handleSearch} className="flex items-center gap-2">
+            <div className="relative">
+              <Search className="w-4 h-4 text-blue-500 dark:text-blue-400 absolute left-3.5 top-3" />
+              <input
+                type="text"
+                placeholder="Search Joshimath, Wayanad..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-white dark:bg-command-950/90 border border-slate-200 dark:border-blue-900/60 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-blue-300/40 text-xs rounded-xl pl-10 pr-4 py-2.5 w-52 sm:w-60 focus:outline-none focus:border-amber-500 dark:focus:border-yellow-400 font-semibold transition-colors"
+              />
+            </div>
+            <button
+              type="submit"
+              className="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 text-xs font-black uppercase tracking-wider shadow-md shadow-amber-500/20 transition flex items-center gap-1.5 hover:from-amber-300 hover:to-yellow-400 cursor-pointer"
+            >
+              <Navigation className="w-3.5 h-3.5" />
+              Locate
+            </button>
+          </form>
+        </div>
       </div>
 
       {/* Quick Summary Strip */}
