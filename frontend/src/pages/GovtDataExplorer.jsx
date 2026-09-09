@@ -355,35 +355,32 @@ export function GovtDataExplorer({ onNavigate }) {
           {/* Prediction Result Display */}
           {predictionResult && (
             <div className="space-y-6 animate-in fade-in duration-300">
-              {/* Verdict Banner */}
-              <div className={`p-6 rounded-2xl border shadow-xl flex flex-col md:flex-row items-center justify-between gap-5 ${
-                predictionResult.riskAnalysis.safetyBadge === 'Red'
-                  ? 'bg-gradient-to-r from-red-950/90 via-red-900/80 to-slate-950 text-white border-red-500/80 shadow-red-900/40'
-                  : predictionResult.riskAnalysis.safetyBadge === 'Orange'
-                  ? 'bg-gradient-to-r from-amber-950/90 via-orange-950/80 to-slate-950 text-white border-amber-500/80 shadow-amber-900/40'
-                  : 'bg-gradient-to-r from-emerald-950/90 via-slate-900 to-slate-950 text-white border-emerald-500/80 shadow-emerald-900/40'
-              }`}>
-                <div className="space-y-1.5 text-center md:text-left">
+              {/* Verdict Banner - Golden Yellow Command Theme */}
+              <div className="p-6 rounded-2xl border-2 border-yellow-400/90 dark:border-yellow-400 bg-gradient-to-r from-amber-500/20 via-yellow-500/25 to-amber-600/20 dark:from-[#2e2106]/95 dark:via-[#221804]/90 dark:to-[#0f172a] text-slate-950 dark:text-white shadow-xl shadow-yellow-500/15 dark:shadow-yellow-950/50 backdrop-blur-md flex flex-col md:flex-row items-center justify-between gap-5 relative overflow-hidden">
+                <div className="absolute -top-12 -left-12 w-44 h-44 bg-yellow-400/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="absolute -bottom-12 -right-12 w-44 h-44 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div className="space-y-1.5 text-center md:text-left relative z-10">
                   <div className="flex items-center justify-center md:justify-start gap-2">
-                    <span className="w-3 h-3 rounded-full bg-red-500 animate-ping"></span>
-                    <span className="text-xs font-mono font-black uppercase tracking-widest text-amber-300">
+                    <span className="w-3 h-3 rounded-full bg-yellow-500 dark:bg-yellow-400 animate-ping"></span>
+                    <span className="text-xs font-mono font-black uppercase tracking-widest text-amber-800 dark:text-yellow-300">
                       AUTONOMOUS PREDICTIVE SAFETY VERDICT
                     </span>
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-black tracking-tight">
+                  <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 dark:text-yellow-300 font-heading">
                     {predictionResult.riskAnalysis.safetyVerdict}
                   </h2>
-                  <p className="text-xs text-slate-300 max-w-2xl">
-                    Location: <strong>{predictionResult.location.locationName}</strong> ({predictionResult.location.district}, {predictionResult.location.state}) • Coordinates: {predictionResult.location.latitude}°N, {predictionResult.location.longitude}°E
+                  <p className="text-xs text-slate-700 dark:text-yellow-100/90 max-w-2xl font-medium">
+                    Location: <strong className="text-slate-950 dark:text-white">{predictionResult.location.locationName}</strong> ({predictionResult.location.district}, {predictionResult.location.state}) • Coordinates: <span className="font-mono text-amber-800 dark:text-yellow-400 font-bold">{predictionResult.location.latitude}°N, {predictionResult.location.longitude}°E</span>
                   </p>
                 </div>
 
-                <div className="flex flex-col items-center justify-center px-6 py-3 rounded-xl bg-slate-950/70 border border-white/20 backdrop-blur-md">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">COMPOSITE RISK SCORE</span>
-                  <span className="text-4xl font-black font-mono text-yellow-400">
-                    {predictionResult.riskAnalysis.compositeRiskScore}<span className="text-lg text-slate-400">/100</span>
+                <div className="flex flex-col items-center justify-center px-6 py-3.5 rounded-2xl bg-white/95 dark:bg-command-950/95 border-2 border-yellow-500/70 dark:border-yellow-400/80 shadow-lg shadow-yellow-500/10 backdrop-blur-md relative z-10">
+                  <span className="text-[10px] font-mono font-black uppercase tracking-wider text-amber-800 dark:text-yellow-300">COMPOSITE RISK SCORE</span>
+                  <span className="text-4xl font-black font-mono text-amber-600 dark:text-yellow-400">
+                    {predictionResult.riskAnalysis.compositeRiskScore}<span className="text-lg text-slate-500 dark:text-slate-400">/100</span>
                   </span>
-                  <span className="text-[10px] font-mono text-emerald-400 font-bold mt-0.5">MCDA MULTI-CRITERIA</span>
+                  <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold mt-0.5">MCDA MULTI-CRITERIA</span>
                 </div>
               </div>
 
