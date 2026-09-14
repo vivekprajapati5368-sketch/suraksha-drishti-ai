@@ -3,11 +3,12 @@ import L from 'leaflet';
 import { 
   Layers, Filter, Eye, EyeOff, MapPin, Shield, AlertTriangle, Info, 
   Crosshair, Pickaxe, Mountain, Waves, Landmark, History, Route, 
-  ChevronDown, Check, Sparkles, Navigation
+  ChevronDown, Check, Sparkles, Navigation, Globe
 } from 'lucide-react';
 import { Badge } from '../common/Badge';
 import { useTheme } from '../../context/ThemeContext';
 import { api } from '../../services/api';
+import { GoogleMapsEmbed } from './GoogleMapsEmbed';
 
 export function DisasterMap({
   hazardZones = [],
@@ -63,6 +64,9 @@ export function DisasterMap({
   const [layersMenuOpen, setLayersMenuOpen] = useState(false);
   const [selectedState, setSelectedState] = useState('All');
   const [selectedHazard, setSelectedHazard] = useState('All');
+
+  // Map Engine Switcher: 'leaflet' vs 'google'
+  const [mapEngine, setMapEngine] = useState('leaflet');
 
   // Internal Fallback registries for GIS layers if not provided via props
   const [internalLayers, setInternalLayers] = useState({
@@ -579,16 +583,72 @@ export function DisasterMap({
     showRivers, showGeology, showDisasters, showProjects, showHighPeaks
   ].filter(Boolean).length;
 
+  const handleSwitchEngine = (engine) => {
+    setMapEngine(engine);
+    if (engine === 'leaflet') {
+      setTimeout(() => {
+        mapInstanceRef.current?.invalidateSize();
+      }, 100);
+    }
+  };
+
   return (
     <div className="relative w-full rounded-2xl overflow-hidden border border-slate-300 dark:border-slate-800 shadow-2xl bg-slate-100 dark:bg-command-950" style={{ height }}>
       {/* Leaflet Target Container */}
-      <div ref={mapContainerRef} className="w-full h-full z-10 cursor-crosshair" />
+      <div 
+        ref={mapContainerRef} 
+        className="w-full h-full z-10 cursor-crosshair" 
+        style={{ display: mapEngine === 'leaflet' ? 'block' : 'none' }}
+      />
+
+      {/* Google Maps Embed API Container */}
+      {mapEngine === 'google' && (
+        <div className="w-full h-full z-10">
+          <GoogleMapsEmbed
+            latitude={analysisCoords?.lat || selectedHabitation?.latitude || 30.5564}
+            longitude={analysisCoords?.lng || selectedHabitation?.longitude || 79.5638}
+            locationName={analysisCoords?.locationName || selectedHabitation?.name || 'Target Hazard Sector'}
+            destination={safeZones && safeZones[0] ? { latitude: safeZones[0].latitude, longitude: safeZones[0].longitude, name: safeZones[0].name } : null}
+            height="100%"
+            defaultMapType="satellite"
+          />
+        </div>
+      )}
 
       {/* Map Controls Floating Overlay (Top-Left) */}
-      <div className="absolute top-4 left-4 z-20 flex flex-wrap gap-2.5 max-w-2xl">
+      <div className="absolute top-4 left-4 z-20 flex flex-wrap gap-2.5 max-w-3xl">
+        {/* Map Engine Switcher: Leaflet vs Google Maps */}
+        <div className="flex items-center p-0.5 bg-white/95 dark:bg-command-900/95 backdrop-blur-xl border border-slate-200 dark:border-blue-500/40 rounded-xl shadow-lg text-xs font-mono font-bold">
+          <button
+            type="button"
+            onClick={() => handleSwitchEngine('leaflet')}
+            className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
+              mapEngine === 'leaflet'
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'text-slate-700 dark:text-blue-200 hover:text-slate-900 dark:hover:text-white'
+            }`}
+            title="OpenStreetMap Tactical Multi-Hazard GIS Radar"
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>Leaflet GIS</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSwitchEngine('google')}
+            className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
+              mapEngine === 'google'
+                ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black shadow-sm'
+                : 'text-slate-700 dark:text-blue-200 hover:text-slate-900 dark:hover:text-white'
+            }`}
+            title="Google Maps Embed API Live Satellite 3D & Directions"
+          >
+            <Globe className="w-3.5 h-3.5" />
+            <span>Google Maps</span>
+          </button>
+        </div>
         
         {/* ANALYZE THIS AREA Button */}
-        {onToggleAnalysisMode && (
+        {onToggleAnalysisMode && mapEngine === 'leaflet' && (
           <button
             type="button"
             onClick={onToggleAnalysisMode}
@@ -605,7 +665,7 @@ export function DisasterMap({
         )}
 
         {/* Layer Controls Dropdown Button */}
-        {showAllLayersToggle && (
+        {showAllLayersToggle && mapEngine === 'leaflet' && (
           <div className="relative">
             <button
               type="button"
@@ -662,23 +722,25 @@ export function DisasterMap({
         )}
 
         {/* State and Hazard Filters */}
-        <div className="bg-white/95 dark:bg-command-900/95 backdrop-blur-xl border border-slate-200 dark:border-blue-500/40 rounded-2xl p-1.5 shadow-xl flex items-center gap-2 text-xs">
-          <select
-            value={selectedState}
-            onChange={(e) => setSelectedState(e.target.value)}
-            className="bg-slate-50 dark:bg-command-950/90 text-slate-800 dark:text-white font-semibold text-xs rounded-xl px-3 py-1.5 border border-slate-300 dark:border-blue-900/80 focus:outline-none"
-          >
-            {states.map(s => <option key={s} value={s}>{s === 'All' ? 'All States' : s}</option>)}
-          </select>
+        {mapEngine === 'leaflet' && (
+          <div className="bg-white/95 dark:bg-command-900/95 backdrop-blur-xl border border-slate-200 dark:border-blue-500/40 rounded-2xl p-1.5 shadow-xl flex items-center gap-2 text-xs">
+            <select
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
+              className="bg-slate-50 dark:bg-command-950/90 text-slate-800 dark:text-white font-semibold text-xs rounded-xl px-3 py-1.5 border border-slate-300 dark:border-blue-900/80 focus:outline-none"
+            >
+              {states.map(s => <option key={s} value={s}>{s === 'All' ? 'All States' : s}</option>)}
+            </select>
 
-          <select
-            value={selectedHazard}
-            onChange={(e) => setSelectedHazard(e.target.value)}
-            className="bg-slate-50 dark:bg-command-950/90 text-slate-800 dark:text-white font-semibold text-xs rounded-xl px-3 py-1.5 border border-slate-300 dark:border-blue-900/80 focus:outline-none"
-          >
-            {hazards.map(h => <option key={h} value={h}>{h === 'All' ? 'All Hazards' : h}</option>)}
-          </select>
-        </div>
+            <select
+              value={selectedHazard}
+              onChange={(e) => setSelectedHazard(e.target.value)}
+              className="bg-slate-50 dark:bg-command-950/90 text-slate-800 dark:text-white font-semibold text-xs rounded-xl px-3 py-1.5 border border-slate-300 dark:border-blue-900/80 focus:outline-none"
+            >
+              {hazards.map(h => <option key={h} value={h}>{h === 'All' ? 'All Hazards' : h}</option>)}
+            </select>
+          </div>
+        )}
       </div>
 
       {/* Area Analysis Prompt Banner when active */}

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, Shield, MapPin, AlertCircle, Compass, Users, CheckCircle2, ChevronRight, Activity, ArrowRight } from 'lucide-react';
+import { X, Shield, MapPin, AlertCircle, Compass, Users, CheckCircle2, ChevronRight, Activity, ArrowRight, Globe } from 'lucide-react';
 import { Badge } from '../common/Badge';
 import { api } from '../../services/api';
+import { GoogleMapsEmbed } from '../map/GoogleMapsEmbed';
 
 export function HabitationDetailDrawer({ habitationId, onClose, onAllocationUpdated }) {
   const [loading, setLoading] = useState(true);
@@ -154,6 +155,30 @@ export function HabitationDetailDrawer({ habitationId, onClose, onAllocationUpda
                 </div>
                 <div className="text-slate-700 dark:text-slate-300 font-sans">
                   <span className="text-slate-500 dark:text-slate-400 font-mono text-[11px]">Mandated Action:</span> <strong className="text-slate-900 dark:text-white ml-1">{hab?.recommended_action}</strong>
+                </div>
+              </div>
+
+              {/* Google Maps Embed API 3D Satellite View */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white font-mono flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5 text-red-500" />
+                    Google Maps Embed API • 3D Satellite Ground Truth
+                  </h4>
+                  <span className="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 font-bold">
+                    {hab?.latitude?.toFixed(4)}°N, {hab?.longitude?.toFixed(4)}°E
+                  </span>
+                </div>
+                <div className="h-64 rounded-2xl overflow-hidden border border-slate-200 dark:border-cyberblue-900/80 shadow-md">
+                  <GoogleMapsEmbed
+                    latitude={hab?.latitude}
+                    longitude={hab?.longitude}
+                    locationName={hab?.name}
+                    destination={allocated ? { latitude: allocated.latitude, longitude: allocated.longitude, name: allocated.name } : null}
+                    height="100%"
+                    defaultMapType="satellite"
+                    zoom={15}
+                  />
                 </div>
               </div>
 

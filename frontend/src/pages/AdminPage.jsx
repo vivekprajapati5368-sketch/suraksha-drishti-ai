@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { SlidersHorizontal, Plus, Trash2, Edit2, CheckCircle2, AlertTriangle, ShieldCheck, Home, Flame, Save, RefreshCw } from 'lucide-react';
+import { SlidersHorizontal, Plus, Trash2, Edit2, CheckCircle2, AlertTriangle, ShieldCheck, Home, Flame, Save, RefreshCw, Globe, Key, ExternalLink, Info } from 'lucide-react';
 import { Badge } from '../components/common/Badge';
 import { DynamicMouseText } from '../components/common/DynamicMouseText';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
+import { GoogleMapsEmbed } from '../components/map/GoogleMapsEmbed';
 
 export function AdminPage({ onNavigate }) {
   const { user } = useAuth();
@@ -19,6 +20,24 @@ export function AdminPage({ onNavigate }) {
   });
   const [savingWeights, setSavingWeights] = useState(false);
   const [weightSuccess, setWeightSuccess] = useState('');
+
+  // Google Maps Platform API Key State
+  const [googleMapsKey, setGoogleMapsKey] = useState(() => {
+    return localStorage.getItem('google_maps_api_key') || import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+  });
+  const [keySavedMsg, setKeySavedMsg] = useState(false);
+
+  const handleSaveGoogleKey = (e) => {
+    e.preventDefault();
+    const cleanKey = googleMapsKey.trim();
+    if (cleanKey) {
+      localStorage.setItem('google_maps_api_key', cleanKey);
+    } else {
+      localStorage.removeItem('google_maps_api_key');
+    }
+    setKeySavedMsg(true);
+    setTimeout(() => setKeySavedMsg(false), 2500);
+  };
 
   // Habitations State
   const [habitations, setHabitations] = useState([]);
@@ -137,10 +156,10 @@ export function AdminPage({ onNavigate }) {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 bg-slate-100 dark:bg-command-900/90 p-2 rounded-2xl border border-slate-200 dark:border-cyberblue-900/80 max-w-lg shadow-sm">
+      <div className="flex flex-wrap items-center gap-2 bg-slate-100 dark:bg-command-900/90 p-2 rounded-2xl border border-slate-200 dark:border-cyberblue-900/80 max-w-2xl shadow-sm">
         <button
           onClick={() => setActiveTab('weights')}
-          className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 font-mono ${
+          className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 font-mono whitespace-nowrap ${
             activeTab === 'weights'
               ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 font-black shadow-md shadow-yellow-500/25'
               : 'text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
@@ -152,7 +171,7 @@ export function AdminPage({ onNavigate }) {
 
         <button
           onClick={() => setActiveTab('habitations')}
-          className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 font-mono ${
+          className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 font-mono whitespace-nowrap ${
             activeTab === 'habitations'
               ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 font-black shadow-md shadow-yellow-500/25'
               : 'text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
@@ -160,6 +179,18 @@ export function AdminPage({ onNavigate }) {
         >
           <Home className="w-3.5 h-3.5" />
           Manage Habitations
+        </button>
+
+        <button
+          onClick={() => setActiveTab('maps')}
+          className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 font-mono whitespace-nowrap ${
+            activeTab === 'maps'
+              ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 font-black shadow-md shadow-yellow-500/25'
+              : 'text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
+          }`}
+        >
+          <Globe className="w-3.5 h-3.5" />
+          Google Maps API & Quotas
         </button>
       </div>
 
@@ -349,6 +380,220 @@ export function AdminPage({ onNavigate }) {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: Google Maps Embed API & Quotas Configuration */}
+      {activeTab === 'maps' && (
+        <div className="space-y-6">
+          <div className="bg-white dark:bg-command-900/90 rounded-2xl p-6 border border-slate-200 dark:border-cyberblue-800/60 shadow-xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-blue-900/40 pb-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Globe className="w-5 h-5 text-red-500" />
+                  <span className="text-xs font-mono font-black uppercase tracking-wider text-red-600 dark:text-red-400">
+                    GOOGLE MAPS PLATFORM EMBED API
+                  </span>
+                </div>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white font-heading">
+                  Maps Embed API Key & Quota Management
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 max-w-3xl">
+                  Configure your Google Maps API key to power real-time 3D satellite imagery, topographic terrain overlays, and evacuation navigation directions across the entire system.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 ${
+                  googleMapsKey
+                    ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700'
+                    : 'bg-amber-100 text-amber-900 dark:bg-yellow-950 dark:text-yellow-300 border border-amber-300 dark:border-yellow-700'
+                }`}>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  {googleMapsKey ? 'API Key Active' : 'Free Embed Fallback Active'}
+                </span>
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSaveGoogleKey} className="space-y-4 max-w-2xl">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-blue-200 mb-1 font-mono">
+                  ENTER GOOGLE MAPS API KEY:
+                </label>
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <Key className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                    <input
+                      type="text"
+                      placeholder="AIzaSy..."
+                      value={googleMapsKey}
+                      onChange={(e) => setGoogleMapsKey(e.target.value)}
+                      className="w-full bg-slate-50 dark:bg-command-950 border border-slate-300 dark:border-blue-900/70 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-amber-500 font-bold"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 text-xs font-black tracking-wider uppercase transition shadow-md flex items-center gap-1.5 cursor-pointer flex-shrink-0"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span>Save Key</span>
+                  </button>
+                  {googleMapsKey && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setGoogleMapsKey('');
+                        localStorage.removeItem('google_maps_api_key');
+                        setKeySavedMsg(true);
+                        setTimeout(() => setKeySavedMsg(false), 2000);
+                      }}
+                      className="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-command-950 dark:hover:bg-blue-950 text-red-500 text-xs font-bold border border-slate-300 dark:border-blue-900/50 transition cursor-pointer flex-shrink-0"
+                      title="Clear Key"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {keySavedMsg && (
+                <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-400 dark:border-emerald-500/50 text-xs text-emerald-800 dark:text-emerald-300 flex items-center gap-2 font-mono">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  Google Maps API Key configuration updated successfully!
+                </div>
+              )}
+            </form>
+          </div>
+
+          {/* Pricing, SKU & Quota Guidelines (Exact specs from user prompt) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* SKU Details & Pricing Table */}
+            <div className="bg-white dark:bg-command-900/90 rounded-2xl p-5 border border-slate-200 dark:border-cyberblue-800/60 shadow-xl space-y-4">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white font-heading">
+                  SKU Details and Pricing for Maps Embed API
+                </h4>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-300">
+                The pay-as-you-go SKU details and pricing for the Maps Embed API. <strong>Maps Embed usage is available at no charge.</strong>
+              </p>
+
+              <div className="border border-slate-200 dark:border-blue-900/50 rounded-xl overflow-hidden text-xs">
+                <table className="w-full text-left">
+                  <thead className="bg-slate-100 dark:bg-command-950 font-bold border-b border-slate-200 dark:border-blue-900/50 text-[11px]">
+                    <tr>
+                      <th className="p-2.5">Category</th>
+                      <th className="p-2.5">SKU Details</th>
+                      <th className="p-2.5">SKU Pricing</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 dark:divide-blue-900/30 font-mono text-[11px]">
+                    <tr>
+                      <td className="p-2.5 font-sans font-bold">Essentials</td>
+                      <td className="p-2.5 text-cyan-600 dark:text-cyan-400 font-bold">SKU: Maps Embed</td>
+                      <td className="p-2.5 text-emerald-600 dark:text-emerald-400 font-black">₹0.00 (Free of Charge)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="text-[11px] text-slate-500 dark:text-blue-300/80 space-y-1">
+                <div><strong>Other usage limits:</strong> There are no short-term (queries per second) or long-term (queries per day) limits on the Maps Embed API.</div>
+              </div>
+
+              <div className="flex items-center gap-3 pt-1">
+                <a
+                  href="https://developers.google.com/maps/billing-and-pricing/pricing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1"
+                >
+                  Global Pricing List <ExternalLink className="w-3 h-3" />
+                </a>
+                <a
+                  href="https://developers.google.com/maps/billing-and-pricing/pricing-india"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1"
+                >
+                  India Pricing List <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+
+            {/* Adjust Quotas Guide */}
+            <div className="bg-white dark:bg-command-900/90 rounded-2xl p-5 border border-slate-200 dark:border-cyberblue-800/60 shadow-xl space-y-3 text-xs">
+              <div className="flex items-center gap-2">
+                <Info className="w-4 h-4 text-cyan-500" />
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white font-heading">
+                  How to Adjust Quotas in Google Cloud Console
+                </h4>
+              </div>
+
+              <p className="text-slate-600 dark:text-slate-300">
+                Quota limits define the maximum number of requests allowed for a specific API or service within a given timeframe.
+              </p>
+
+              <div className="p-3 bg-slate-50 dark:bg-command-950 rounded-xl border border-slate-200 dark:border-blue-900/40 space-y-1.5">
+                <span className="font-bold text-slate-900 dark:text-white block font-mono text-[11px]">
+                  STEP-BY-STEP QUOTA MODIFICATION:
+                </span>
+                <ol className="list-decimal pl-4 space-y-1 text-slate-600 dark:text-slate-300 text-[11px]">
+                  <li>In the Cloud console, navigate to <strong>Google Maps Platform &gt; Quotas</strong>.</li>
+                  <li>Select the API (e.g. <strong>Maps Embed API</strong>) for which you want to modify the quota.</li>
+                  <li>Identify the quota value, select using the checkbox, click <strong>Edit</strong>.</li>
+                  <li>Enter a new quota value, and click <strong>Submit request</strong>.</li>
+                </ol>
+              </div>
+
+              <div className="pt-1 flex items-center justify-between">
+                <a
+                  href="https://mapsplatform.google.com/pricing/#pricing-calculator"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-bold text-amber-600 dark:text-yellow-400 hover:underline flex items-center gap-1"
+                >
+                  Pricing Calculator <ExternalLink className="w-3 h-3" />
+                </a>
+                <a
+                  href="https://developers.google.com/maps/billing-and-pricing/manage-costs#quotas"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1"
+                >
+                  Quotas and Alerts Guide <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Live Interactive Preview */}
+          <div className="bg-white dark:bg-command-900/90 rounded-2xl p-5 border border-slate-200 dark:border-cyberblue-800/60 shadow-xl space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4 text-emerald-500" />
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white font-heading">
+                  Live Interactive Google Maps Embed Verification
+                </h4>
+              </div>
+              <span className="text-[11px] font-mono text-slate-500">
+                Testing Joshimath Subsidence Belt [30.5564°N, 79.5638°E]
+              </span>
+            </div>
+
+            <div className="h-[460px] rounded-xl overflow-hidden border border-slate-200 dark:border-blue-900/50">
+              <GoogleMapsEmbed
+                latitude={30.5564}
+                longitude={79.5638}
+                locationName="Joshimath Upper Sector"
+                destination={{ latitude: 30.5312, longitude: 79.5714, name: 'Auli High Ground Shelter' }}
+                height="100%"
+                defaultMapType="satellite"
+              />
+            </div>
           </div>
         </div>
       )}
