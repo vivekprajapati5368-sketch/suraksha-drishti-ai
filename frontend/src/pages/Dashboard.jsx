@@ -22,7 +22,8 @@ import {
   Crosshair,
   Eye,
   Layers,
-  Zap
+  Zap,
+  GraduationCap
 } from 'lucide-react';
 import {
   PieChart,
@@ -148,6 +149,35 @@ export function Dashboard({ onNavigate }) {
           >
             <Flame className="w-4 h-4 text-slate-950 fill-slate-950/30" />
             Simulate Crisis
+          </button>
+        </div>
+      </div>
+
+      {/* Academic Viva Voce & B.Tech Capstone Distinction Banner */}
+      <div className="p-4 sm:p-5 rounded-3xl border-2 border-amber-400/80 dark:border-yellow-400 bg-gradient-to-r from-amber-500/15 via-purple-950/25 to-amber-500/15 dark:from-[#221503]/90 dark:via-[#1a0a30]/90 dark:to-[#0f172a] shadow-lg shadow-yellow-500/10 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 text-slate-950 flex items-center justify-center flex-shrink-0 font-black shadow-md">
+            <GraduationCap className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[10px] font-mono font-black uppercase text-amber-900 dark:text-yellow-300 bg-yellow-400/20 px-2 py-0.5 rounded border border-yellow-400/50">
+                B.TECH FINAL YEAR CAPSTONE MAJOR PROJECT (2025–2026)
+              </span>
+              <span className="text-xs font-mono font-bold text-slate-700 dark:text-slate-300">Lead Architect: Vivek Kumar</span>
+            </div>
+            <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white mt-1">
+              Autonomous Spatial Intelligence, Geotechnical Shear Modeling & MCDA Evacuation Support
+            </h3>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <button
+            onClick={() => onNavigate('/thesis')}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 text-xs font-black uppercase font-mono shadow-md transition flex items-center gap-2 cursor-pointer"
+          >
+            <span>Open Thesis & Viva Defense</span>
+            <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       </div>

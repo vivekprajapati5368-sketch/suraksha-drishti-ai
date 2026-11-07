@@ -61,6 +61,7 @@ export function GovtDataExplorer({ onNavigate }) {
   const [customNearMining, setCustomNearMining] = useState(false);
   const [predictionResult, setPredictionResult] = useState(null);
   const [predicting, setPredicting] = useState(false);
+  const [verdictTheme, setVerdictTheme] = useState('yellow'); // 'yellow' | 'purple' | 'hybrid'
 
   // Load initial data
   useEffect(() => {
@@ -355,43 +356,121 @@ export function GovtDataExplorer({ onNavigate }) {
           {/* Prediction Result Display */}
           {predictionResult && (
             <div className="space-y-6 animate-in fade-in duration-300">
-              {/* Verdict Banner - Royal Cyber Purple & Gold Telemetry Aesthetic */}
-              <div className="p-6 rounded-3xl border-2 border-purple-500/80 dark:border-purple-400 bg-gradient-to-r from-purple-900/20 via-indigo-950/30 to-purple-900/20 dark:from-[#1b0833] dark:via-[#130526] dark:to-command-950 text-slate-950 dark:text-white shadow-2xl shadow-purple-900/20 dark:shadow-purple-950/70 backdrop-blur-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden ring-1 ring-purple-500/30">
-                {/* Ambient Glow Orbs */}
-                <div className="absolute -top-14 -left-14 w-48 h-48 bg-purple-600/25 dark:bg-purple-600/30 rounded-full blur-3xl pointer-events-none"></div>
-                <div className="absolute -bottom-14 -right-14 w-48 h-48 bg-amber-500/20 dark:bg-yellow-500/20 rounded-full blur-3xl pointer-events-none"></div>
+              {/* Verdict Banner Header with Theme Switcher: Yellow | Purple | Hybrid */}
+              <div className="flex items-center justify-between pb-1">
+                <span className="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Activity className="w-3.5 h-3.5 text-amber-500" />
+                  PREDICTIVE SAFETY VERDICT TELEMETRY
+                </span>
+                <div className="flex items-center gap-1 bg-slate-100 dark:bg-command-950 p-1 rounded-xl border border-slate-200 dark:border-blue-900/60 text-[10px] font-mono font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setVerdictTheme('yellow')}
+                    className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                      verdictTheme === 'yellow'
+                        ? 'bg-amber-400 text-slate-950 font-black shadow-sm'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    }`}
+                  >
+                    <span>🌟 Cyber Yellow</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setVerdictTheme('purple')}
+                    className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                      verdictTheme === 'purple'
+                        ? 'bg-purple-600 text-white font-black shadow-sm'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    }`}
+                  >
+                    <span>🔮 Royal Purple</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setVerdictTheme('hybrid')}
+                    className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                      verdictTheme === 'hybrid'
+                        ? 'bg-gradient-to-r from-amber-400 to-purple-600 text-slate-950 font-black shadow-sm'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    }`}
+                  >
+                    <span>⚡ Gold & Purple</span>
+                  </button>
+                </div>
+              </div>
 
-                <div className="space-y-2 text-center md:text-left relative z-10">
+              {/* Verdict Banner - Dynamic Theme Support (Yellow / Purple / Hybrid) */}
+              <div className={`p-6 rounded-3xl border-2 transition-all duration-300 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden backdrop-blur-xl ${
+                verdictTheme === 'yellow'
+                  ? 'border-amber-400/90 dark:border-yellow-400 bg-gradient-to-r from-amber-500/25 via-yellow-500/30 to-amber-600/25 dark:from-[#2a1d04] dark:via-[#201503] dark:to-[#11192d] text-slate-950 dark:text-white shadow-2xl shadow-yellow-500/20 dark:shadow-yellow-950/60 ring-2 ring-yellow-400/30'
+                  : verdictTheme === 'purple'
+                  ? 'border-purple-500/80 dark:border-purple-400 bg-gradient-to-r from-purple-900/25 via-indigo-950/40 to-purple-900/25 dark:from-[#20083c] dark:via-[#16052b] dark:to-[#0c142c] text-slate-950 dark:text-white shadow-2xl shadow-purple-900/25 dark:shadow-purple-950/70 ring-2 ring-purple-500/30'
+                  : 'border-amber-400 dark:border-yellow-400 bg-gradient-to-r from-amber-500/20 via-purple-950/40 to-amber-500/20 dark:from-[#261603] dark:via-[#1a0a2f] dark:to-[#0f172a] text-slate-950 dark:text-white shadow-2xl shadow-yellow-500/20 dark:shadow-purple-950/80 ring-2 ring-yellow-400/40'
+              }`}>
+                {/* Ambient Glow Orbs */}
+                <div className={`absolute -top-14 -left-14 w-52 h-52 rounded-full blur-3xl pointer-events-none ${
+                  verdictTheme === 'yellow' ? 'bg-yellow-400/30 dark:bg-yellow-400/25' : 'bg-purple-600/30 dark:bg-purple-600/35'
+                }`}></div>
+                <div className="absolute -bottom-14 -right-14 w-52 h-52 bg-amber-500/25 dark:bg-yellow-500/25 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div className="space-y-2 text-center md:text-left relative z-10 flex-1">
                   <div className="flex items-center justify-center md:justify-start gap-2.5">
                     <span className="relative flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                        verdictTheme === 'yellow' ? 'bg-yellow-400' : (verdictTheme === 'purple' ? 'bg-purple-400' : 'bg-amber-400')
+                      }`}></span>
+                      <span className={`relative inline-flex rounded-full h-3 w-3 ${
+                        verdictTheme === 'yellow' ? 'bg-amber-500' : (verdictTheme === 'purple' ? 'bg-purple-500' : 'bg-yellow-400')
+                      }`}></span>
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black uppercase tracking-widest bg-purple-500/20 text-purple-900 dark:text-purple-300 border border-purple-400/40">
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black uppercase tracking-widest border ${
+                      verdictTheme === 'yellow'
+                        ? 'bg-yellow-400/20 text-amber-900 dark:text-yellow-300 border-yellow-400/60'
+                        : verdictTheme === 'purple'
+                        ? 'bg-purple-500/20 text-purple-900 dark:text-purple-300 border-purple-400/60'
+                        : 'bg-gradient-to-r from-yellow-400/20 to-purple-500/20 text-amber-900 dark:text-yellow-300 border-yellow-400/50'
+                    }`}>
                       AUTONOMOUS PREDICTIVE SAFETY VERDICT
                     </span>
                   </div>
 
                   <h2 className="text-xl sm:text-2xl font-black tracking-tight font-heading text-slate-950 dark:text-white">
-                    <span className="bg-gradient-to-r from-purple-950 via-purple-800 to-indigo-950 dark:from-white dark:via-purple-100 dark:to-yellow-300 bg-clip-text text-transparent">
+                    <span className={
+                      verdictTheme === 'yellow'
+                        ? 'bg-gradient-to-r from-amber-900 via-yellow-700 to-amber-950 dark:from-yellow-200 dark:via-amber-300 dark:to-yellow-400 bg-clip-text text-transparent'
+                        : verdictTheme === 'purple'
+                        ? 'bg-gradient-to-r from-purple-950 via-purple-800 to-indigo-950 dark:from-white dark:via-purple-100 dark:to-yellow-300 bg-clip-text text-transparent'
+                        : 'bg-gradient-to-r from-yellow-600 via-amber-500 to-purple-600 dark:from-yellow-200 dark:via-yellow-300 dark:to-purple-200 bg-clip-text text-transparent'
+                    }>
                       {predictionResult.riskAnalysis.safetyVerdict}
                     </span>
                   </h2>
 
-                  <p className="text-xs text-slate-700 dark:text-purple-200/90 max-w-2xl font-medium">
-                    Location: <strong className="text-slate-950 dark:text-white">{predictionResult.location.locationName}</strong> ({predictionResult.location.district}, {predictionResult.location.state}) • Coordinates: <span className="font-mono text-purple-800 dark:text-yellow-400 font-bold">{predictionResult.location.latitude}°N, {predictionResult.location.longitude}°E</span>
+                  {/* High-Contrast, Crystal-Clear Location & Coordinates (Eliminating unreadable dark blue text) */}
+                  <p className="text-xs text-slate-800 dark:text-amber-100/95 max-w-2xl font-medium leading-relaxed">
+                    Location: <strong className="text-slate-950 dark:text-yellow-300 font-bold">{predictionResult.location.locationName}</strong> ({predictionResult.location.district}, {predictionResult.location.state}) • Coordinates: <span className="font-mono text-amber-900 dark:text-yellow-300 font-black">{predictionResult.location.latitude}°N, {predictionResult.location.longitude}°E</span>
                   </p>
                 </div>
 
                 {/* Composite Risk Score Badge */}
-                <div className="flex flex-col items-center justify-center px-6 py-4 rounded-2xl bg-white/95 dark:bg-[#120524]/95 border-2 border-purple-400/70 dark:border-purple-400/80 shadow-lg shadow-purple-950/30 backdrop-blur-md relative z-10 flex-shrink-0">
-                  <span className="text-[10px] font-mono font-black uppercase tracking-wider text-purple-800 dark:text-purple-300">
+                <div className={`flex flex-col items-center justify-center px-6 py-4 rounded-2xl border-2 shadow-xl backdrop-blur-md relative z-10 flex-shrink-0 ${
+                  verdictTheme === 'yellow'
+                    ? 'bg-white/95 dark:bg-[#1a1302]/95 border-amber-400/90 dark:border-yellow-400 shadow-yellow-950/30'
+                    : verdictTheme === 'purple'
+                    ? 'bg-white/95 dark:bg-[#150628]/95 border-purple-400/80 dark:border-purple-400 shadow-purple-950/40'
+                    : 'bg-white/95 dark:bg-[#180c2c]/95 border-amber-400/90 dark:border-yellow-400 shadow-amber-950/30'
+                }`}>
+                  <span className={`text-[10px] font-mono font-black uppercase tracking-wider ${
+                    verdictTheme === 'yellow' ? 'text-amber-800 dark:text-yellow-300' : (verdictTheme === 'purple' ? 'text-purple-800 dark:text-purple-300' : 'text-amber-800 dark:text-yellow-300')
+                  }`}>
                     COMPOSITE RISK SCORE
                   </span>
-                  <span className="text-4xl font-black font-mono text-amber-500 dark:text-yellow-400 my-0.5">
+                  <span className={`text-4xl font-black font-mono my-0.5 ${
+                    verdictTheme === 'yellow' ? 'text-amber-500 dark:text-yellow-400' : (verdictTheme === 'purple' ? 'text-purple-600 dark:text-yellow-400' : 'text-amber-500 dark:text-yellow-400')
+                  }`}>
                     {predictionResult.riskAnalysis.compositeRiskScore}<span className="text-lg text-slate-400">/100</span>
                   </span>
-                  <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-black tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                  <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 font-black tracking-wider bg-emerald-500/15 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-500/40">
                     MCDA MULTI-CRITERIA
                   </span>
                 </div>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Bell, User, ChevronDown, Check, LogOut, Radio, Save, X, Phone, Mail, Building, CheckCircle2, Lock, Sun, Moon } from 'lucide-react';
+import { Shield, Bell, User, ChevronDown, Check, LogOut, Radio, Save, X, Phone, Mail, Building, CheckCircle2, Lock, Sun, Moon, GraduationCap } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Badge } from '../common/Badge';
 import { IndianFlagLogo } from '../common/IndianFlagLogo';
 import { DynamicMouseText } from '../common/DynamicMouseText';
 
-export function Navbar({ onOpenMobileMenu }) {
+export function Navbar({ onOpenMobileMenu, onNavigate }) {
   const { user, quickSwitch, updateProfile, logout, DEMO_USERS } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -108,6 +108,17 @@ export function Navbar({ onOpenMobileMenu }) {
 
         {/* Right: Dark/White Mode Toggle, Telemetry, Profile & Quick Role Switch */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* B.Tech Capstone Thesis & Viva Defense Quick Launcher */}
+          <button
+            onClick={() => onNavigate && onNavigate('/thesis')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-black text-xs uppercase font-mono shadow-md shadow-amber-500/20 border border-yellow-300 transition cursor-pointer select-none"
+            title="Open B.Tech Final Year Capstone Thesis & Viva Voce Defense Dossier"
+          >
+            <GraduationCap className="w-4 h-4 text-slate-950" />
+            <span className="hidden xl:inline">B.TECH THESIS & DEFENSE</span>
+            <span className="xl:hidden">THESIS</span>
+          </button>
+
           {/* Dark / White Mode Toggle */}
           <button
             onClick={toggleTheme}

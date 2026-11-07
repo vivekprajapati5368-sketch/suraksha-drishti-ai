@@ -3,7 +3,8 @@ import L from 'leaflet';
 import { 
   Layers, Filter, Eye, EyeOff, MapPin, Shield, AlertTriangle, Info, 
   Crosshair, Pickaxe, Mountain, Waves, Landmark, History, Route, 
-  ChevronDown, Check, Sparkles, Navigation, Globe
+  ChevronDown, Check, Sparkles, Navigation, Globe,
+  Maximize2, Minimize2, Compass, Wind, CloudRain, Sun, Activity
 } from 'lucide-react';
 import { Badge } from '../common/Badge';
 import { useTheme } from '../../context/ThemeContext';
@@ -30,8 +31,18 @@ export function DisasterMap({
   const isDark = theme === 'dark';
 
   const mapContainerRef = useRef(null);
+  const outerWrapperRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const tileLayerRef = useRef(null);
+  const labelsLayerRef = useRef(null);
+  const weatherLayerRef = useRef(null);
+
+  // High-Quality Multi-Base Tile Switcher & Map Perspective Controls
+  const [baseTileStyle, setBaseTileStyle] = useState('auto'); // 'auto' | 'satellite' | 'dark' | 'terrain' | 'voyager'
+  const [is3DTilt, setIs3DTilt] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showWeatherRadar, setShowWeatherRadar] = useState(false);
+  const [cursorTelemetry, setCursorTelemetry] = useState({ lat: 30.5564, lng: 79.5638, zoom: 11 });
 
   // Leaflet Layer Groups
   const layersRef = useRef({
@@ -119,6 +130,20 @@ export function DisasterMap({
       });
 
       L.control.zoom({ position: 'topright' }).addTo(map);
+      L.control.scale({ imperial: false, metric: true, position: 'bottomright' }).addTo(map);
+
+      // Track cursor coordinates for real-time military/GIS HUD
+      map.on('mousemove', (e) => {
+        setCursorTelemetry({
+          lat: parseFloat(e.latlng.lat.toFixed(4)),
+          lng: parseFloat(e.latlng.lng.toFixed(4)),
+          zoom: map.getZoom()
+        });
+      });
+
+      map.on('zoomend', () => {
+        setCursorTelemetry(prev => ({ ...prev, zoom: map.getZoom() }));
+      });
 
       // Add all layer groups to map
       Object.values(layersRef.current).forEach(layer => layer.addTo(map));
@@ -145,25 +170,62 @@ export function DisasterMap({
     };
   }, []);
 
-  // Dynamically update tile layer when theme switches
+  // Dynamically update tile layer when theme or baseTileStyle switches (High-DPI Retina & Satellite Support)
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
 
     if (tileLayerRef.current) {
       map.removeLayer(tileLayerRef.current);
+      tileLayerRef.current = null;
+    }
+    if (labelsLayerRef.current) {
+      map.removeLayer(labelsLayerRef.current);
+      labelsLayerRef.current = null;
     }
 
-    const tileUrl = isDark
-      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    const effectiveStyle = baseTileStyle === 'auto' ? (isDark ? 'dark' : 'voyager') : baseTileStyle;
+
+    let tileUrl = '';
+    let attribution = '';
+    let maxZoom = 20;
+
+    if (effectiveStyle === 'satellite') {
+      tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+      attribution = '&copy; Esri, Maxar, Earthstar Geographics, USGS';
+      maxZoom = 19;
+    } else if (effectiveStyle === 'terrain') {
+      tileUrl = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
+      attribution = '&copy; OpenStreetMap contributors, SRTM | Map style: &copy; OpenTopoMap (CC-BY-SA)';
+      maxZoom = 17;
+    } else if (effectiveStyle === 'dark') {
+      tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+      attribution = '&copy; OpenStreetMap contributors &copy; CARTO';
+      maxZoom = 20;
+    } else {
+      // voyager day
+      tileUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+      attribution = '&copy; OpenStreetMap contributors &copy; CARTO';
+      maxZoom = 20;
+    }
 
     tileLayerRef.current = L.tileLayer(tileUrl, {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 19
+      attribution,
+      subdomains: effectiveStyle === 'terrain' ? 'abc' : 'abcd',
+      maxZoom,
+      detectRetina: true
     }).addTo(map);
-  }, [isDark]);
+
+    // If satellite mode, add crisp hybrid street and place labels on top
+    if (effectiveStyle === 'satellite') {
+      labelsLayerRef.current = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
+        subdomains: 'abcd',
+        maxZoom: 19,
+        pane: 'overlayPane',
+        opacity: 0.95
+      }).addTo(map);
+    }
+  }, [isDark, baseTileStyle]);
 
   // Render Core Layers & New GIS Layers
   useEffect(() => {
@@ -224,6 +286,24 @@ export function DisasterMap({
         `;
         circle.bindPopup(popupContent);
         layersRef.current.hazardZones.addLayer(circle);
+
+        // Animated High-Visibility Pulsing Radar Center for Red & Orange Zones
+        if (isRed || isOrange) {
+          const pulseIcon = L.divIcon({
+            className: 'hazard-pulse-marker',
+            html: `
+              <div style="position: relative; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+                <span style="position: absolute; width: 100%; height: 100%; border-radius: 50%; background: ${color}; opacity: 0.75; animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></span>
+                <span style="position: relative; width: 10px; height: 10px; border-radius: 50%; background: ${color}; border: 2px solid #ffffff; box-shadow: 0 0 8px ${color};"></span>
+              </div>
+            `,
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+          });
+          const pulseMarker = L.marker([zone.latitude, zone.longitude], { icon: pulseIcon });
+          pulseMarker.bindPopup(popupContent);
+          layersRef.current.hazardZones.addLayer(pulseMarker);
+        }
       });
     }
 
@@ -593,12 +673,22 @@ export function DisasterMap({
   };
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden border border-slate-300 dark:border-slate-800 shadow-2xl bg-slate-100 dark:bg-command-950" style={{ height }}>
-      {/* Leaflet Target Container */}
+    <div 
+      ref={outerWrapperRef}
+      className={`relative w-full rounded-2xl overflow-hidden border border-slate-300 dark:border-slate-800 shadow-2xl bg-slate-900 transition-all duration-300 ${
+        isFullscreen ? 'fixed inset-0 z-[9999] h-screen w-screen rounded-none' : ''
+      }`} 
+      style={{ height: isFullscreen ? '100vh' : height }}
+    >
+      {/* Leaflet Target Container with 3D Tilt perspective */}
       <div 
         ref={mapContainerRef} 
-        className="w-full h-full z-10 cursor-crosshair" 
-        style={{ display: mapEngine === 'leaflet' ? 'block' : 'none' }}
+        className="w-full h-full z-10 cursor-crosshair transition-transform duration-500 ease-out" 
+        style={{ 
+          display: mapEngine === 'leaflet' ? 'block' : 'none',
+          transform: is3DTilt ? 'perspective(1200px) rotateX(24deg) scale(1.04)' : 'none',
+          transformOrigin: '50% 60%'
+        }}
       />
 
       {/* Google Maps Embed API Container */}
@@ -616,7 +706,7 @@ export function DisasterMap({
       )}
 
       {/* Map Controls Floating Overlay (Top-Left) */}
-      <div className="absolute top-4 left-4 z-20 flex flex-wrap gap-2.5 max-w-3xl">
+      <div className="absolute top-4 left-4 z-20 flex flex-wrap items-center gap-2 max-w-4xl">
         {/* Map Engine Switcher: Leaflet vs Google Maps */}
         <div className="flex items-center p-0.5 bg-white/95 dark:bg-command-900/95 backdrop-blur-xl border border-slate-200 dark:border-blue-500/40 rounded-xl shadow-lg text-xs font-mono font-bold">
           <button
@@ -646,13 +736,114 @@ export function DisasterMap({
             <span>Google Maps</span>
           </button>
         </div>
+
+        {/* Multi-Base Layer Selector (Only in Leaflet Mode) */}
+        {mapEngine === 'leaflet' && (
+          <div className="flex items-center p-0.5 bg-white/95 dark:bg-command-900/95 backdrop-blur-xl border border-slate-200 dark:border-blue-500/40 rounded-xl shadow-lg text-xs font-mono font-bold">
+            <button
+              type="button"
+              onClick={() => setBaseTileStyle('dark')}
+              className={`px-2.5 py-1.5 rounded-lg transition ${
+                baseTileStyle === 'dark' || (baseTileStyle === 'auto' && isDark)
+                  ? 'bg-slate-950 text-white font-black shadow-sm ring-1 ring-blue-500/40'
+                  : 'text-slate-700 dark:text-blue-200 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="CartoDB Dark Matter High-DPI Retina"
+            >
+              Dark
+            </button>
+            <button
+              type="button"
+              onClick={() => setBaseTileStyle('satellite')}
+              className={`px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 ${
+                baseTileStyle === 'satellite'
+                  ? 'bg-emerald-600 text-white font-black shadow-sm'
+                  : 'text-slate-700 dark:text-blue-200 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Esri World Imagery Photorealistic Satellite with Labels"
+            >
+              <span>🛰️ Satellite HD</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setBaseTileStyle('terrain')}
+              className={`px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 ${
+                baseTileStyle === 'terrain'
+                  ? 'bg-amber-600 text-white font-black shadow-sm'
+                  : 'text-slate-700 dark:text-blue-200 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="OpenTopoMap Elevation Contour Hillshading"
+            >
+              <span>🏔️ Topo</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setBaseTileStyle('voyager')}
+              className={`px-2.5 py-1.5 rounded-lg transition ${
+                baseTileStyle === 'voyager' || (baseTileStyle === 'auto' && !isDark)
+                  ? 'bg-blue-600 text-white font-black shadow-sm'
+                  : 'text-slate-700 dark:text-blue-200 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Daylight National Carto Voyager"
+            >
+              Day
+            </button>
+          </div>
+        )}
+
+        {/* 3D Perspective Tilt Button */}
+        {mapEngine === 'leaflet' && (
+          <button
+            type="button"
+            onClick={() => setIs3DTilt(!is3DTilt)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-black transition-all flex items-center gap-1.5 shadow-lg ${
+              is3DTilt
+                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white ring-2 ring-purple-400'
+                : 'bg-white/95 dark:bg-command-900/95 border border-slate-200 dark:border-blue-500/40 text-slate-800 dark:text-white hover:bg-slate-50'
+            }`}
+            title="Toggle 3D Drone Perspective Tilt View"
+          >
+            <Compass className={`w-3.5 h-3.5 ${is3DTilt ? 'animate-spin' : ''}`} />
+            <span>{is3DTilt ? '3D PITCH [24°]' : '3D TILT'}</span>
+          </button>
+        )}
+
+        {/* Weather Radar Simulation Toggle */}
+        {mapEngine === 'leaflet' && (
+          <button
+            type="button"
+            onClick={() => setShowWeatherRadar(!showWeatherRadar)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-black transition-all flex items-center gap-1.5 shadow-lg ${
+              showWeatherRadar
+                ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white ring-2 ring-sky-400'
+                : 'bg-white/95 dark:bg-command-900/95 border border-slate-200 dark:border-blue-500/40 text-slate-800 dark:text-white hover:bg-slate-50'
+            }`}
+            title="Toggle Live Weather Radar Precipitation Telemetry"
+          >
+            <CloudRain className={`w-3.5 h-3.5 ${showWeatherRadar ? 'animate-pulse text-yellow-300' : 'text-sky-400'}`} />
+            <span>RADAR FX</span>
+          </button>
+        )}
+
+        {/* Fullscreen Command HUD Toggle */}
+        <button
+          type="button"
+          onClick={() => {
+            setIsFullscreen(!isFullscreen);
+            setTimeout(() => mapInstanceRef.current?.invalidateSize(), 200);
+          }}
+          className="p-2 rounded-xl bg-white/95 dark:bg-command-900/95 border border-slate-200 dark:border-blue-500/40 text-slate-800 dark:text-white hover:bg-slate-50 shadow-lg cursor-pointer"
+          title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen Command Center Mode'}
+        >
+          {isFullscreen ? <Minimize2 className="w-4 h-4 text-amber-500" /> : <Maximize2 className="w-4 h-4" />}
+        </button>
         
         {/* ANALYZE THIS AREA Button */}
         {onToggleAnalysisMode && mapEngine === 'leaflet' && (
           <button
             type="button"
             onClick={onToggleAnalysisMode}
-            className={`px-3.5 py-2 rounded-xl text-xs font-mono font-black uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg cursor-pointer select-none ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-black uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg cursor-pointer select-none ${
               isAnalysisMode
                 ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white ring-2 ring-cyan-400/50'
                 : 'bg-white/95 dark:bg-command-900/95 border border-slate-200 dark:border-cyan-500/40 text-cyan-700 dark:text-cyan-300 hover:border-cyan-400'
@@ -660,7 +851,7 @@ export function DisasterMap({
             title="Click anywhere on the map to analyze 360° disaster risk"
           >
             <Crosshair className={`w-4 h-4 ${isAnalysisMode ? 'animate-spin' : ''}`} />
-            <span>{isAnalysisMode ? 'ANALYZING THIS AREA' : 'ANALYZE THIS AREA'}</span>
+            <span>{isAnalysisMode ? 'ANALYZING AREA' : 'ANALYZE THIS AREA'}</span>
           </button>
         )}
 
@@ -670,7 +861,7 @@ export function DisasterMap({
             <button
               type="button"
               onClick={() => setLayersMenuOpen(!layersMenuOpen)}
-              className="px-3.5 py-2 rounded-xl bg-white/95 dark:bg-command-900/95 backdrop-blur-xl border border-slate-200 dark:border-blue-500/40 text-xs font-mono font-black text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-command-850 transition flex items-center gap-2 shadow-lg cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-white/95 dark:bg-command-900/95 backdrop-blur-xl border border-slate-200 dark:border-blue-500/40 text-xs font-mono font-black text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-command-850 transition flex items-center gap-2 shadow-lg cursor-pointer"
             >
               <Layers className="w-4 h-4 text-amber-500" />
               <span>GIS LAYERS ({activeLayersCount})</span>
@@ -723,11 +914,11 @@ export function DisasterMap({
 
         {/* State and Hazard Filters */}
         {mapEngine === 'leaflet' && (
-          <div className="bg-white/95 dark:bg-command-900/95 backdrop-blur-xl border border-slate-200 dark:border-blue-500/40 rounded-2xl p-1.5 shadow-xl flex items-center gap-2 text-xs">
+          <div className="bg-white/95 dark:bg-command-900/95 backdrop-blur-xl border border-slate-200 dark:border-blue-500/40 rounded-xl p-1 shadow-xl flex items-center gap-1.5 text-xs">
             <select
               value={selectedState}
               onChange={(e) => setSelectedState(e.target.value)}
-              className="bg-slate-50 dark:bg-command-950/90 text-slate-800 dark:text-white font-semibold text-xs rounded-xl px-3 py-1.5 border border-slate-300 dark:border-blue-900/80 focus:outline-none"
+              className="bg-slate-50 dark:bg-command-950/90 text-slate-800 dark:text-white font-semibold text-xs rounded-lg px-2.5 py-1 border border-slate-300 dark:border-blue-900/80 focus:outline-none"
             >
               {states.map(s => <option key={s} value={s}>{s === 'All' ? 'All States' : s}</option>)}
             </select>
@@ -735,12 +926,64 @@ export function DisasterMap({
             <select
               value={selectedHazard}
               onChange={(e) => setSelectedHazard(e.target.value)}
-              className="bg-slate-50 dark:bg-command-950/90 text-slate-800 dark:text-white font-semibold text-xs rounded-xl px-3 py-1.5 border border-slate-300 dark:border-blue-900/80 focus:outline-none"
+              className="bg-slate-50 dark:bg-command-950/90 text-slate-800 dark:text-white font-semibold text-xs rounded-lg px-2.5 py-1 border border-slate-300 dark:border-blue-900/80 focus:outline-none"
             >
               {hazards.map(h => <option key={h} value={h}>{h === 'All' ? 'All Hazards' : h}</option>)}
             </select>
           </div>
         )}
+      </div>
+
+      {/* Floating Weather Radar Telemetry Card (When active) */}
+      {showWeatherRadar && (
+        <div className="absolute top-16 right-4 z-20 bg-slate-950/90 text-white backdrop-blur-xl border border-sky-500/60 rounded-2xl p-3 shadow-2xl text-xs space-y-2 pointer-events-auto w-64 animate-in fade-in">
+          <div className="flex items-center justify-between border-b border-sky-900/60 pb-1.5">
+            <span className="font-mono text-[10px] font-black uppercase text-sky-400 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+              DOPPLER WEATHER RADAR
+            </span>
+            <span className="text-[10px] font-mono text-emerald-400 font-bold">LIVE TELEMETRY</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
+            <div className="bg-sky-950/40 p-2 rounded-xl border border-sky-800/40">
+              <span className="text-slate-400 block text-[9px]">Precipitation</span>
+              <strong className="text-yellow-400 text-xs">142 mm/24h</strong>
+            </div>
+            <div className="bg-sky-950/40 p-2 rounded-xl border border-sky-800/40">
+              <span className="text-slate-400 block text-[9px]">Wind Speed</span>
+              <strong className="text-cyan-400 text-xs">38 km/h NW</strong>
+            </div>
+            <div className="bg-sky-950/40 p-2 rounded-xl border border-sky-800/40">
+              <span className="text-slate-400 block text-[9px]">Baro Pressure</span>
+              <strong className="text-slate-200 text-xs">785 hPa</strong>
+            </div>
+            <div className="bg-sky-950/40 p-2 rounded-xl border border-sky-800/40">
+              <span className="text-slate-400 block text-[9px]">Rel. Humidity</span>
+              <strong className="text-sky-300 text-xs">88%</strong>
+            </div>
+          </div>
+          <div className="text-[10px] text-sky-200/80 font-mono flex items-center gap-1">
+            <Activity className="w-3 h-3 text-yellow-400 animate-pulse" />
+            <span>Doppler reflectivity: 48 dBZ (Heavy Rain)</span>
+          </div>
+        </div>
+      )}
+
+      {/* Live Telemetry Cursor HUD Overlay (Bottom-Right) */}
+      <div className="absolute bottom-4 right-4 z-20 hidden sm:flex items-center gap-2 bg-slate-950/90 text-white backdrop-blur-md border border-slate-700 dark:border-blue-500/40 px-3 py-1.5 rounded-xl shadow-xl text-[10px] font-mono pointer-events-auto">
+        <div className="flex items-center gap-1.5 border-r border-slate-700 dark:border-blue-900/60 pr-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span className="text-emerald-400 font-bold uppercase">GIS HUD</span>
+        </div>
+        <div className="text-slate-300">
+          LAT: <strong className="text-yellow-400">{cursorTelemetry.lat}°N</strong>
+        </div>
+        <div className="text-slate-300">
+          LNG: <strong className="text-yellow-400">{cursorTelemetry.lng}°E</strong>
+        </div>
+        <div className="text-slate-400 border-l border-slate-700 dark:border-blue-900/60 pl-2">
+          ZOOM: <strong className="text-cyan-400">{cursorTelemetry.zoom}x</strong>
+        </div>
       </div>
 
       {/* Area Analysis Prompt Banner when active */}
@@ -752,13 +995,13 @@ export function DisasterMap({
       )}
 
       {/* Map Legend Overlay (Bottom-Left) */}
-      <div className="absolute bottom-4 left-4 z-20 bg-white/95 dark:bg-command-900/95 backdrop-blur-xl border border-slate-200 dark:border-blue-500/40 rounded-2xl p-3.5 shadow-xl text-xs space-y-2 pointer-events-auto max-w-xs">
+      <div className="absolute bottom-4 left-4 z-20 bg-white/95 dark:bg-command-900/95 backdrop-blur-xl border border-slate-200 dark:border-blue-500/40 rounded-2xl p-3 shadow-xl text-xs space-y-1.5 pointer-events-auto max-w-xs">
         <span className="text-[10px] uppercase font-bold text-amber-700 dark:text-yellow-400 tracking-wider block font-mono">
           MAP INTELLIGENCE LEGEND
         </span>
         <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px]">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
             <span className="text-slate-900 dark:text-white font-semibold">🔴 Red Zone</span>
           </div>
           <div className="flex items-center gap-1.5">

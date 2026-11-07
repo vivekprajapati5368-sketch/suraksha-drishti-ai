@@ -14,7 +14,8 @@ import {
   Database,
   Activity,
   Radio,
-  X
+  X,
+  GraduationCap
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { IndianFlagLogo } from '../common/IndianFlagLogo';
@@ -25,6 +26,7 @@ export function Sidebar({ currentPath, onNavigate, mobileOpen, onCloseMobile }) 
 
   const navItems = [
     { id: 'dashboard', label: 'Executive Situation Room', icon: LayoutDashboard, path: '/' },
+    { id: 'thesis', label: 'B.Tech Thesis & Viva Defense', icon: GraduationCap, path: '/thesis', badge: 'ACADEMIC' },
     { id: 'area-intelligence', label: '360° Area Intelligence', icon: Activity, path: '/area-intelligence', badge: '360°' },
     { id: 'emergency-alerts', label: 'SOS Alert System', icon: Radio, path: '/emergency-alerts', badge: 'SOS' },
     { id: 'govt-data', label: 'Govt Data & Safety Predictor', icon: Database, path: '/govt-data', badge: 'NEW' },

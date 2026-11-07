@@ -18,6 +18,7 @@ import { LoginPage } from './pages/LoginPage';
 import { GovtDataExplorer } from './pages/GovtDataExplorer';
 import { AreaIntelligencePage } from './pages/AreaIntelligencePage';
 import { EmergencyAlertsPage } from './pages/EmergencyAlertsPage';
+import { AcademicDefensePage } from './pages/AcademicDefensePage';
 import { LiveIndianSkyBackground } from './components/common/LiveIndianSkyBackground';
 
 function MainApp() {
@@ -75,6 +76,10 @@ function MainApp() {
         return <AnalyticsPage onNavigate={navigate} />;
       case '/reports':
         return <ReportsPage onNavigate={navigate} />;
+      case '/thesis':
+      case '/academic-defense':
+      case '/capstone':
+        return <AcademicDefensePage onNavigate={navigate} />;
       case '/admin':
         return <AdminPage onNavigate={navigate} />;
       case '/discussion':
@@ -92,7 +97,7 @@ function MainApp() {
       <LiveIndianSkyBackground />
 
       {/* Top Navbar */}
-      <Navbar onOpenMobileMenu={() => setMobileSidebarOpen(true)} />
+      <Navbar onOpenMobileMenu={() => setMobileSidebarOpen(true)} onNavigate={navigate} />
 
       {/* Main Layout Body */}
       <div className="flex-1 flex max-w-[1700px] w-full mx-auto relative z-10">
